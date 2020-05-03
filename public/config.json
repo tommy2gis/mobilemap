@@ -1,0 +1,110 @@
+{
+  "routingurl":"http://map.tianditu.gov.cn/data/",
+  "searchurl":"http://61.177.139.228:9000/gateway/geocoder/dmdz/v1",
+  "solrurl":"http://61.177.139.228:9000/gateway/solr/solr_poi_core/select",
+  "resourceurl":"resources.json",
+  "serviceurl":"http://localhost:9006/",
+  "map": {
+    "projection": "EPSG:4326",
+    "units": "m",
+    "center": {
+      "x": 120.570224137,
+      "y": 32.38585854,
+      "crs": "EPSG:4326"
+    },
+
+    "zoom": 12,
+    "compare": {
+      "leftgroup": "矢量",
+      "rightgroup": "影像"
+    },
+    "layers": [
+      {
+        "url": [
+          "http://t0.tianditu.gov.cn/vec_c/wmts",
+          "http://t1.tianditu.gov.cn/vec_c/wmts",
+          "http://t2.tianditu.gov.cn/vec_c/wmts",
+          "http://t3.tianditu.gov.cn/vec_c/wmts"
+        ],
+        "type": "geotdtwmts",
+        "name": "天地图道路",
+        "visibility": true,
+        "title": "天地图",
+        "autoload": false,
+        "minZoom":0,
+        "maxZoom":17,
+        "tk":"979370626f38396281484293eb175e2e",
+        "group": "矢量",
+        "layer": "vec",
+        "style": "default",
+        "format": "tiles",
+        "tileMatrixSet": "c"
+      },
+      {
+        "url": [
+          "http://t0.tianditu.gov.cn/cva_c/wmts",
+          "http://t1.tianditu.gov.cn/cva_c/wmts",
+          "http://t2.tianditu.gov.cn/cva_c/wmts",
+          "http://t3.tianditu.gov.cn/cva_c/wmts"
+        ],
+        "type": "geotdtwmts",
+        "name": "天地图道路标注",
+        "visibility": true,
+        "minZoom":0,
+        "maxZoom":17,
+        "title": "天地图",
+        "tk":"979370626f38396281484293eb175e2e",
+        "autoload": false,
+        "group": "矢量",
+        "layer": "cva",
+        "style": "default",
+        "format": "tiles",
+        "tileMatrixSet": "c"
+      },
+
+      {
+        "url": [
+          "http://t0.tianditu.gov.cn/img_c/wmts",
+          "http://t1.tianditu.gov.cn/img_c/wmts",
+          "http://t2.tianditu.gov.cn/img_c/wmts",
+          "http://t3.tianditu.gov.cn/img_c/wmts"
+        ],
+        "type": "geotdtwmts",
+        "name": "天地图影像",
+        "visibility": false,
+        "title": "天地图",
+        "minZoom":0,
+        "maxZoom":17,
+        "autoload": false,
+        "tk":"979370626f38396281484293eb175e2e",
+        "group": "影像",
+        "layer": "img",
+        "style": "default",
+        "format": "tiles",
+        "tileMatrixSet": "c"
+      },
+      {
+        "url": [
+          "http://t0.tianditu.gov.cn/cia_c/wmts",
+          "http://t1.tianditu.gov.cn/cia_c/wmts",
+          "http://t2.tianditu.gov.cn/cia_c/wmts",
+          "http://t3.tianditu.gov.cn/cia_c/wmts"
+        ],
+        "type": "geotdtwmts",
+        "name": "天地图影像标注",
+        "visibility": false,
+        "title": "天地图",
+        "minZoom":0,
+        "maxZoom":17,
+        "autoload": false,
+        "group": "影像",
+        "tk":"979370626f38396281484293eb175e2e",
+        "layer": "cia",
+        "style": "default",
+        "format": "tiles",
+        "tileMatrixSet": "c"
+      }
+      
+    ]
+  }
+}
