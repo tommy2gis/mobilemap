@@ -340,13 +340,22 @@ class App extends React.Component {
               replace
             />
           )}
-          <ul className="left_toolbar">
+          <ul className="right_toolbar">
           <li
             className="circlebtn layerchange-btn"
             onClick={this.showLayerChangeControl}
           />
           <li
             className="circlebtn thematics-btn"
+          />
+          <li className="circlebtn location-btn" s
+            onClick={this.getLocation} />
+          </ul>
+
+          <ul className="left_toolbar">
+          <li
+            className="circlebtn layerchange-btn"
+            onClick={this.showLayerChangeControl}
           />
           <li className="circlebtn location-btn" s
             onClick={this.getLocation} />
