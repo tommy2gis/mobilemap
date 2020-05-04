@@ -1,11 +1,11 @@
 import React from "react";
-const axios = require('axios');
+const axios = require("axios");
 import { connect } from "react-redux";
 import { Toast, NavBar, WingBlank } from "antd-mobile";
 import { changeMapView, mouseDownOnMap, changeModel } from "../../actions/map";
 import { endDrawing } from "../../actions/draw";
 import { switchLayers } from "../../actions/layers";
-import { queryTasks,getUserLocation } from "../../actions/query";
+import { queryTasks, getUserLocation } from "../../actions/query";
 import LMap from "../map/Map";
 import LLayer from "../map/Layer";
 import Feature from "../map/Feature";
@@ -13,13 +13,11 @@ import DrawSupport from "../map/DrawSupport";
 import ZoomControl from "../map/ZoomControl";
 import { NavLink } from "react-router-dom";
 import LayerSwitch from "../mobiles/LayerSwitch";
-import TaskDetail from "../mobiles/TaskDetail";
-import DataEdit from "../mobiles/DataEdit";
-import MapCenterCoord from '../map/MapCenterCoord';
+import MapCenterCoord from "../map/MapCenterCoord";
 import "leaflet/dist/leaflet.css";
 import "./style.less";
 import "../../themes/iconfont/iconfont.css";
-import wx from 'weixin-js-sdk';
+import wx from "weixin-js-sdk";
 
 class App extends React.Component {
   constructor(props) {
@@ -27,11 +25,9 @@ class App extends React.Component {
     this.state = {
       title: "app",
       open: false,
-      model: "layerswitch"
+      model: "layerswitch",
     };
   }
-
-
 
   componentDidMount() {
     const ele = document.getElementById("loading");
@@ -44,50 +40,53 @@ class App extends React.Component {
     axios
       .get(ServerUrl + "/wx/config", {
         params: {
-          url: window.location.href.split('#')[0]
-        }
+          url: window.location.href.split("#")[0],
+        },
       })
-      .then(res => {
-        let config=res.data.data;
-       // alert(JSON.stringify(config));
-       // alert(JSON.stringify(window.location.href.split('#')[0]))
-        wx.config({ debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+      .then((res) => {
+        let config = res.data.data;
+        // alert(JSON.stringify(config));
+        // alert(JSON.stringify(window.location.href.split('#')[0]))
+        wx.config({
+          debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
           appId: config.appId, // 必填，公众号的唯一标识
           timestamp: config.timestamp, // 必填，生成签名的时间戳
           nonceStr: config.nonceStr, // 必填，生成签名的随机串
-          signature: config.signature,// 必填，签名，见附录1
-          jsApiList: ["chooseImage",
-          "previewImage",
-          "uploadImage",
-          "downloadImage",
-          "translateVoice",
-          "getNetworkType",
-          "openLocation",
-          "getLocation",
-          "hideOptionMenu",
-          "showOptionMenu",
-          "hideMenuItems",
-          "showMenuItems",
-          "hideAllNonBaseMenuItem",
-          "showAllNonBaseMenuItem"] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2});
+          signature: config.signature, // 必填，签名，见附录1
+          jsApiList: [
+            "chooseImage",
+            "previewImage",
+            "uploadImage",
+            "downloadImage",
+            "translateVoice",
+            "getNetworkType",
+            "openLocation",
+            "getLocation",
+            "hideOptionMenu",
+            "showOptionMenu",
+            "hideMenuItems",
+            "showMenuItems",
+            "hideAllNonBaseMenuItem",
+            "showAllNonBaseMenuItem",
+          ], // 必填，需要使用的JS接口列表，所有JS接口列表见附录2});
         });
-          wx.ready(res => {
-         // alert("wx.ready")
+        wx.ready((res) => {
+          // alert("wx.ready")
           wx.getLocation({
-            success: res => {
+            success: (res) => {
               this.props.getUserLocation(res);
             },
             cancel: function(res) {
               Toast.info("用户拒绝授权获取地理位置", 1);
-            }
+            },
           });
         });
-        wx.error(err => {
-         // alert(JSON.stringify(err))
+        wx.error((err) => {
+          // alert(JSON.stringify(err))
           Toast.info(JSON.stringify(err), 1);
         });
       })
-      .catch(e => {});
+      .catch((e) => {});
   };
 
   /**
@@ -99,7 +98,7 @@ class App extends React.Component {
    */
   renderLayerContent = (layer, projection) => {
     if (layer.features && layer.type === "vector") {
-      return layer.features.map(feature => {
+      return layer.features.map((feature) => {
         return (
           <Feature
             key={feature.properties.id}
@@ -122,7 +121,7 @@ class App extends React.Component {
 
   showLayerChangeControl = () => {
     const model =
-      (!this.props.map.model || this.props.map.model == "main")
+      !this.props.map.model || this.props.map.model == "main"
         ? "layerswitch"
         : "main";
     this.props.changeModel(model);
@@ -134,14 +133,14 @@ class App extends React.Component {
    * @param {*} layers
    * @returns
    */
-  renderLayers = layers => {
+  renderLayers = (layers) => {
     const projection = this.props.map.projection || "EPSG:3857";
     if (layers) {
       if (layers.refreshing) {
         layers = layers.refreshing;
       }
       return layers
-        .map(layer => {
+        .map((layer) => {
           return (
             <LLayer type={layer.type} key={layer.name} options={layer}>
               {this.renderLayerContent(layer, projection)}
@@ -155,11 +154,11 @@ class App extends React.Component {
             options={{
               name: "location_marker",
               type: "vector",
-              visibility: true
+              visibility: true,
             }}
           >
             {this.renderLocationContent()}
-          </LLayer>
+          </LLayer>,
         ]);
     }
     return null;
@@ -174,15 +173,15 @@ class App extends React.Component {
         opacity: 0.8,
         fill: true,
         fillColor: "#fd8e2c",
-        fillOpacity: 1
+        fillOpacity: 1,
       };
       let fea = {
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [loc.longitude, loc.latitude]
+          coordinates: [loc.longitude, loc.latitude],
         },
-        properties: {}
+        properties: {},
       };
       return (
         <Feature
@@ -220,7 +219,7 @@ class App extends React.Component {
             iconGlyph: "embassy",
             iconColor: "cyan",
             iconPrefix: "map-icon",
-            iconLibrary: "extra"
+            iconLibrary: "extra",
           }
         : {
             color: "#eee",
@@ -228,7 +227,7 @@ class App extends React.Component {
             opacity: 0.8,
             fill: true,
             fillColor: "#000",
-            fillOpacity: 0.8
+            fillOpacity: 0.8,
           });
     return (
       <Feature
@@ -246,14 +245,14 @@ class App extends React.Component {
     );
   };
 
-  renderHeadLeft = model => {
+  renderHeadLeft = (model) => {
     const userinfo = this.props.query.userinfo;
     switch (model) {
       case "main":
       case "layerswitch":
         return (
           <div>
-            <NavLink to="/login" className="login-btn" replace></NavLink>
+            <NavLink to="/login" className="login-btn" replace />
             <span style={{ marginLeft: 40 }}>
               {userinfo ? userinfo.realName : "点击登录"}
             </span>
@@ -263,14 +262,14 @@ class App extends React.Component {
       case "taskdetail":
         return (
           <div>
-            <a className="back-main"></a>
+            <a className="back-main" />
           </div>
         );
         break;
       case "dataedit":
         return (
           <div>
-            <a className="back-main"></a>
+            <a className="back-main" />
           </div>
         );
         break;
@@ -279,18 +278,18 @@ class App extends React.Component {
         break;
     }
   };
-  getLocation = e => {
+  getLocation = (e) => {
     wx.getLocation({
-      success: res => {
+      success: (res) => {
         this.props.getUserLocation(res);
       },
       cancel: function(res) {
         Toast.info("用户拒绝授权获取地理位置", 1);
-      }
+      },
     });
   };
 
-  renderHeadRight = model => {
+  renderHeadRight = (model) => {
     switch (model) {
       case "main":
         return <b onClick={() => this.setState({ open: true })}>...</b>;
@@ -339,48 +338,50 @@ class App extends React.Component {
               to="/datacollect"
               className="circlebtn adddata-btn"
               replace
-            ></NavLink>
+            />
           )}
-
-          <a
+          <ul className="left_toolbar">
+          <li
             className="circlebtn layerchange-btn"
             onClick={this.showLayerChangeControl}
-          ></a>
-          <a className="circlebtn location-btn" onClick={this.getLocation}></a>
-          {model == "main" && (
-            <NavLink to="/tasks" className="tasknum-btn" replace>
-              {"当前任务数(" + taskcount + ")"}
-            </NavLink>
-          )}
+          />
+          <li
+            className="circlebtn thematics-btn"
+          />
+          <li className="circlebtn location-btn" s
+            onClick={this.getLocation} />
+          </ul>
+      
 
-          <div  className={"clientmap " + (model != "main" ? " bottommodel":"")}>
-          <LMap
-            id="map"
-            ref="map"
-            contextmenu={false}
-            zoom={map.zoom}
-            center={map.center}
-            onMapViewChanges={this.props.onMapViewChanges}
-            onMouseDown={this.handleMouseDown}
-            projection={map.projection}
+          <div
+            className={"clientmap " + (model != "main" ? " bottommodel" : "")}
           >
-            {this.renderLayers(mapConfig.layers)}
-            {model == "dataedit"&&<MapCenterCoord/>} 
-            <ZoomControl />
-            <DrawSupport
-              drawStatus={draw.drawStatus}
-              drawOwner={draw.drawOwner}
-              drawMethod={draw.drawMethod}
-              style={draw.style}
-              onEndDrawing={this.props.endDrawing}
-              features={draw.features}
-            />
-          </LMap>
+            <LMap
+              id="map"
+              ref="map"
+              contextmenu={false}
+              zoom={map.zoom}
+              center={map.center}
+              onMapViewChanges={this.props.onMapViewChanges}
+              onMouseDown={this.handleMouseDown}
+              projection={map.projection}
+            >
+              {this.renderLayers(mapConfig.layers)}
+              {model == "dataedit" && <MapCenterCoord />}
+              <ZoomControl />
+              <DrawSupport
+                drawStatus={draw.drawStatus}
+                drawOwner={draw.drawOwner}
+                drawMethod={draw.drawMethod}
+                style={draw.style}
+                onEndDrawing={this.props.endDrawing}
+                features={draw.features}
+              />
+            </LMap>
           </div>
 
-          
           <div className="bottom-container">
-            {model == "layerswitch" && <LayerSwitch></LayerSwitch>}
+            {model == "layerswitch" && <LayerSwitch />}
           </div>
         </div>
       );
@@ -393,7 +394,7 @@ require("../map/WMTSLayer");
 require("../map/VectorLayer");
 
 export default connect(
-  state => {
+  (state) => {
     return {
       mapConfig: state.mapConfig,
       map: state.map || (state.mapConfig && state.mapConfig.map),
@@ -404,7 +405,7 @@ export default connect(
       routing: state.routing,
       draw: state.draw,
       sidebar: state.sidebar,
-      toolbar: state.toolbar
+      toolbar: state.toolbar,
     };
   },
   {
@@ -414,6 +415,6 @@ export default connect(
     mouseDownOnMap,
     changeModel,
     queryTasks,
-    getUserLocation
+    getUserLocation,
   }
 )(App);
