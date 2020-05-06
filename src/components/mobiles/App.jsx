@@ -1,11 +1,13 @@
 import React from "react";
 const axios = require("axios");
 import { connect } from "react-redux";
-import { Toast, NavBar, WingBlank } from "antd-mobile";
+import { Toast, NavBar, InputItem } from "antd-mobile";
 import { changeMapView, mouseDownOnMap, changeModel } from "../../actions/map";
 import { endDrawing } from "../../actions/draw";
 import { switchLayers } from "../../actions/layers";
-import { queryTasks, getUserLocation } from "../../actions/query";
+import { getUserLocation } from "../../actions/query";
+import SearchBar from "../../modules/SearchBar/searchbar";
+import Routing from "../../modules/Routing/routing";
 import LMap from "../map/Map";
 import LLayer from "../map/Layer";
 import Feature from "../map/Feature";
@@ -17,6 +19,7 @@ import MapCenterCoord from "../map/MapCenterCoord";
 import "leaflet/dist/leaflet.css";
 import "./style.less";
 import "../../themes/iconfont/iconfont.css";
+import "antd/dist/antd.css";
 import wx from "weixin-js-sdk";
 
 class App extends React.Component {
@@ -33,7 +36,6 @@ class App extends React.Component {
     const ele = document.getElementById("loading");
     ele.style.display = "none";
     this.weixin();
-    this.props.queryTasks();
   }
 
   weixin = () => {
@@ -254,8 +256,15 @@ class App extends React.Component {
           <div>
             <NavLink to="/login" className="login-btn" replace />
             <span style={{ marginLeft: 40 }}>
-              {userinfo ? userinfo.realName : "点击登录"}
+              {/* {userinfo ? userinfo.realName : "点击登录"} */}
             </span>
+          </div>
+        );
+        break;
+      case "routing":
+        return (
+          <div>
+            <a className="back-main" />
           </div>
         );
         break;
@@ -288,6 +297,9 @@ class App extends React.Component {
       },
     });
   };
+  showRoutingPanel = () => {
+    this.props.changeModel("routing");
+  };
 
   renderHeadRight = (model) => {
     switch (model) {
@@ -315,55 +327,61 @@ class App extends React.Component {
     if (mapConfig && mapConfig.map) {
       return (
         <div className="container">
-          <NavBar
-            mode="light"
-            onLeftClick={() => {
-              if (model == "taskdetail" || model == "dataedit") {
-                this.props.changeModel("main");
-              }
-            }}
-            leftContent={this.renderHeadLeft(model)}
-            rightContent={this.renderHeadRight(model)}
-          >
-            {model == "taskdetail"
-              ? "详细信息"
-              : model == "dataedit"
-              ? "数据编辑"
-              : ""}
-          </NavBar>
+          {(model === "main"||model === "layerswitch") ? (
+            <SearchBar />
+          ) : model === "routing" ? (
+            [
+              <NavBar
+                mode="light"
+                onLeftClick={() => {
+                  this.props.changeModel("main");
+                }}
+                leftContent={this.renderHeadLeft(model)}
+                rightContent={this.renderHeadRight(model)}
+              >
+                线路规划
+              </NavBar>,
+              <Routing />,
+            ]
+          ) : null}
 
-          {/* <a className="circlebtn compass-btn"></a> */}
-          {model == "main" && (
-            <NavLink
-              to="/datacollect"
-              className="circlebtn adddata-btn"
-              replace
-            />
-          )}
           <ul className="right_toolbar">
-          <li
-            className="circlebtn layerchange-btn"
-            onClick={this.showLayerChangeControl}
-          />
-          <li
-            className="circlebtn thematics-btn"
-          />
-          <li className="circlebtn location-btn" s
-            onClick={this.getLocation} />
+            <li className="circlebtn " onClick={this.showLayerChangeControl}>
+              <i className="iconfont icon-tuceng" 
+              style={{ color: "#EFA659" }}
+              
+              />
+            </li>
+            <li className="circlebtn ">
+              <NavLink to="/thematics" className="iconfont icon-zhuanti1" replace />
+            </li>
+            <li className="circlebtn " onClick={this.getLocation}>
+              <i className="iconfont icon-dingwei" style={{ color: "#B059EF" }}/>
+              
+            </li>
           </ul>
 
           <ul className="left_toolbar">
-          <li
-            className="circlebtn layerchange-btn"
-            onClick={this.showLayerChangeControl}
-          />
-          <li className="circlebtn location-btn" s
-            onClick={this.getLocation} />
+            <li className="circlebtn " onClick={this.showLayerChangeControl}>
+              <i
+                className="iconfont icon-zhoubian"
+                style={{ color: "#1890FF" }}
+              />
+            </li>
+            <li className="circlebtn  " onClick={this.showRoutingPanel}>
+              <i className="iconfont icon-xianlu"  style={{ color: "#EFA659" }}/>
+            </li>
           </ul>
-      
 
           <div
-            className={"clientmap " + (model != "main" ? " bottommodel" : "")}
+            className={
+              "clientmap " +
+              (model === "layerswitch"
+                ? " bottommodel"
+                : model === "routing"
+                ? "headmodel"
+                : "")
+            }
           >
             <LMap
               id="map"
@@ -423,7 +441,6 @@ export default connect(
     endDrawing,
     mouseDownOnMap,
     changeModel,
-    queryTasks,
     getUserLocation,
   }
 )(App);

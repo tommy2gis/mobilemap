@@ -2,26 +2,25 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:31:12 
  * @Last Modified by: 史涛
- * @Last Modified time: 2019-11-22 16:47:57
+ * @Last Modified time: 2020-05-06 14:00:14
  */
 
 const {
     CHANGE_QUERYPAGEINDEX,
     QUERY_RESULT,
+    QUERYALL_RESULT,
     COLLAPSE_RESULT,
     HOVER_RESULTINDEX,
+    CLICK_RESULTINDEX,
     QUERY_ERROR,
     QUERY_ONFOCUS,
     CHANGE_QUERYKEY,
+    CURRENT_RESPONSE_TIME,
     CHANGE_QUERYAREAKEY,
-    QUERY_TASKS_RESULT,
+    NEARBY_LOCINFO,
     QUERY_SIMPLERESULT,
-    SELECT_TASK,
-    QUERY_PATTENS_RESULT,
-    SELECT_PATTEN,
-    RESET_QUERY,
-    GET_USERLOCATION,
-    LOGIN
+    QUERY_PROMPTRESULT,
+    RESET_QUERY
 } = require('../actions/query');
 
 const assign = require('object-assign');
@@ -32,18 +31,19 @@ const initialState = {
     featureTypes: {},
     data: {},
     pageindex: 1,
-    page: 7,
+    page: 10,
     type: '',
     key: '',
     areakey:null,
+    responsetime:'',
     areatype:'',
     inputfocus: false,
     result: '',
     resultcollapsed: false,
-    simpleresult: '',
-    tasksresult:null,
+    simpleresult: [],
+    nearbyextend:'',
     hoverid: null,
-    curloc:null,
+    clickid:null,
     selectedid: null,
     resultError: null
 };
@@ -53,20 +53,35 @@ function query(state = initialState, action) {
         case QUERY_RESULT: {
             return assign({}, state, {
                 result: action.result,
+                resultcount:action.count,
                 resultError: null
             });
         }
 
-        case GET_USERLOCATION: {
+        case QUERY_PROMPTRESULT:{
             return assign({}, state, {
-                curloc: action.loc,
-                resultError: null
+                prompt: action.result
             });
         }
 
-        case LOGIN: {
+        case CURRENT_RESPONSE_TIME:{
             return assign({}, state, {
-                userinfo: action.userinfo,
+                responsetime: action.time
+            });
+        }
+
+        case NEARBY_LOCINFO:{
+            return assign({}, state, {
+                nearbyextend: action.nearbyextend,
+                nearbytitle:action.nearbytitle,
+                nearbypoint:action.nearbypoint
+            });
+        }
+
+
+        case QUERYALL_RESULT: {
+            return assign({}, state, {
+                resultall: action.result,
                 resultError: null
             });
         }
@@ -87,7 +102,11 @@ function query(state = initialState, action) {
         case RESET_QUERY: {
             return assign({}, state, {
                 result: '',
+                resultall:'',
                 key: '',
+                nearbyextend: '',
+                nearbytitle:'',
+                nearbypoint:'',
                 resultError: null
             });
         }
@@ -96,31 +115,6 @@ function query(state = initialState, action) {
                 simpleresult: action.simpleresult
             });
         }
-
-        case SELECT_TASK:{
-            return assign({}, state, {
-                selecttask: action.task
-            });
-        }
-
-        case QUERY_TASKS_RESULT:{
-            return assign({}, state, {
-                tasksresult: action.result
-            });
-        }
-
-        case SELECT_PATTEN:{
-            return assign({}, state, {
-                selectpatten: action.task
-            });
-        }
-
-        case QUERY_PATTENS_RESULT:{
-            return assign({}, state, {
-                pattensresult: action.result
-            });
-        }
-
 
 
         case QUERY_ONFOCUS: {
@@ -139,6 +133,12 @@ function query(state = initialState, action) {
                 hoverid: action.hoverid,
             });
         }
+        case CLICK_RESULTINDEX: {
+            return assign({}, state, {
+                clickid: action.clickid,
+            });
+        }
+        
         case CHANGE_QUERYKEY: {
             return assign({}, state, {
                 key: action.key,

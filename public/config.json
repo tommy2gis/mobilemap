@@ -1,9 +1,11 @@
 {
+  "tdtserverurl":"http://api.tianditu.gov.cn",
   "routingurl":"http://map.tianditu.gov.cn/data/",
   "searchurl":"http://61.177.139.228:9000/gateway/geocoder/dmdz/v1",
   "solrurl":"http://61.177.139.228:9000/gateway/solr/solr_poi_core/select",
   "resourceurl":"resources.json",
   "serviceurl":"http://localhost:9006/",
+  "tdttk":"56e2ef8967b3a0dbb746b7a40b7faa94",
   "map": {
     "projection": "EPSG:4326",
     "units": "m",

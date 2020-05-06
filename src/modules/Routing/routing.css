@@ -1,0 +1,139 @@
+.routing_panel{
+    position: absolute;
+    text-align: center;
+    background-color: #fff;
+    z-index: 2001;
+    padding: 10px;
+}
+
+.ant-tabs:not(.ant-tabs-vertical) > .ant-tabs-content > .ant-tabs-tabpane-inactive {
+    width: 0;
+}
+
+.routing_panel  input{
+    margin:0px 10px;
+    border: 0px;
+    border-bottom: 1px solid #a9a8a8 !important;
+    border-radius: 0px;
+    padding-left: 30px;
+    outline:none;
+    width: 250px;
+}
+
+.routing_panel input:focus{
+    -webkit-box-shadow: 0 0 0 2px #FFF;
+            box-shadow: 0 0 0 2px #FFF;
+    border-right-width: 1px !important;
+}
+
+
+.routing_panel .ant-select-show-search{
+    margin: 4px 0px;
+}
+
+
+
+.routing_leftlogo{
+    text-align: center;
+    padding: 18px 0px;
+}
+
+.routing_leftlogo a{
+    font-size: 30px;
+}
+
+.routing_resultpanel{
+    text-align: center;
+    padding: 6px 0px;
+    border-top: 1px solid #b9b9b9;
+}
+
+.routing_detailist{
+    padding: 0px;
+}
+
+.routing_detailist li{
+    list-style: none;
+    text-align: left;
+    
+}
+
+.routing_detailist li span{
+    color: #2196f3
+}
+
+.routing_panel .ant-collapse-header{
+    text-align: left;
+}
+
+
+.routing_panel .routing_resultpanel .ant-collapse{
+    height: calc(100vh - 460px);
+    overflow: auto;
+}
+
+.routing_panel .routing_locationpanel .ant-collapse{
+    height: calc(100vh - 350px);
+    overflow: auto;
+}
+
+.routing_locationpanel .ant-collapse-header{
+    background-color: #025490;
+    color: #fff !important;
+    padding: 2px 0 2px 40px !important;
+}
+
+.routing_locationpanel .ant-collapse-content .ant-list-item{
+    padding: 2px 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+
+.routing_locationpanel .ant-collapse-content .ant-list-item:hover .ant-list-item-meta-title{
+    color: #025490;
+}
+
+.routing_locationpanel .ant-collapse-content .ant-list-item:hover .ant-avatar{
+    background: #025490;
+}
+
+
+
+.routing_panel .ant-alert-info {
+    padding: 6px;
+    margin: 6px;
+}
+
+.routing_panel .ant-spin{
+    margin-top: -80px;
+    position: absolute;
+    z-index: 2100;
+}
+
+.routing_panel .ant-timeline-item{
+    padding: 0px !important;
+}
+
+
+
+
+.routing_panel .anticon-close{
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.routing_panel .ant-select-selection__placeholder{
+padding-left: 30px
+}
+
+.routing_panel .ant-input-suffix{
+left: 12px;
+right: auto !important;
+}
+
+.midpointinput .ant-input-suffix{
+    right: 12px ;
+    left: auto !important;
+}

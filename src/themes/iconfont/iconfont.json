@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "9914871",
+      "name": "调换",
+      "font_class": "tiaohuan",
+      "unicode": "e640",
+      "unicode_decimal": 58944
+    },
+    {
+      "icon_id": "6583307",
+      "name": "clear",
+      "font_class": "clear",
+      "unicode": "e6be",
+      "unicode_decimal": 59070
+    },
+    {
+      "icon_id": "10237569",
+      "name": "search",
+      "font_class": "search",
+      "unicode": "e692",
+      "unicode_decimal": 59026
+    },
+    {
       "icon_id": "4816417",
       "name": "周边1",
       "font_class": "zhoubian",

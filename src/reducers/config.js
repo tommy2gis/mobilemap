@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:30:42 
  * @Last Modified by: 史涛
- * @Last Modified time: 2019-11-22 10:07:52
+ * @Last Modified time: 2020-05-06 14:36:17
  */
 
 
@@ -40,7 +40,10 @@ function mapConfig(state = null, action) {
             };
             newMapState.map = assign({}, newMapState.map, newMapState.layers, { mapId: action.mapId, size, version: hasVersion ? action.config.version : 1 });
             // we store the map initial state for future usage
-            return assign({}, newMapState, { routingurl: action.config.routingurl, 
+            return assign({}, newMapState, { 
+                tdtserverurl: action.config.tdtserverurl,
+                tdttk:action.config.tdttk,  
+                routingurl: action.config.routingurl, 
                 searchurl: action.config.searchurl,
                 solrurl: action.config.solrurl, 
                 serviceurl: action.config.serviceurl,
