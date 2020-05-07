@@ -45,7 +45,6 @@
 .routing_resultpanel{
     text-align: center;
     padding: 6px 0px;
-    border-top: 1px solid #b9b9b9;
 }
 
 .routing_detailist{
@@ -70,6 +69,7 @@
 .routing_panel .routing_resultpanel .ant-collapse{
     height: calc(100vh - 460px);
     overflow: auto;
+    width: 100%;
 }
 
 .routing_panel .routing_locationpanel .ant-collapse{

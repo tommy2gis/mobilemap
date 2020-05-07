@@ -13,10 +13,11 @@ function loadThematicsList(result) {
     };
 }
 
-function showThematicLayer(id) {
+function showThematicLayer(id,visibility) {
     return {
         type: SHOW_THEMATICLAYER,
-        id
+        id,
+        visibility
     };
 }
 

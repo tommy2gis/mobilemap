@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:29:27 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-06 15:41:12
+ * @Last Modified time: 2020-05-07 15:19:24
  */
 const ROUTING_RESULT = 'ROUTING_RESULT';
 const RESET_ROUTING = 'RESET_ROUTING';
@@ -14,6 +14,7 @@ const ADD_ENDLOC = 'ADD_ENDLOC';
 const ADD_ENDADDRESS = 'ADD_ENDADDRESS';
 const CHANGE_STYLE = 'CHANGE_STYLE';
 const CHNAGE_MODULE = 'CHNAGE_MODULE';
+const CHNAGE_POSI_MODULE = 'CHNAGE_POSI_MODULE';
 const CHANGE_BUSSTYLE = 'CHANGE_BUSSTYLE';
 const CHNAGE_BUSLINE = 'CHNAGE_BUSLINE';
 const DELETE_MIDLOC = 'DELETE_MIDLOC';
@@ -79,11 +80,11 @@ function geoCodeQueryResponse(geocoderesult) {
  * @param {*} model
  * @returns
  */
-function geoCodeQuery(lat,lng, model) {
+function geoCodeQuery(lat,lng,model) {
 
     return (dispatch, getState) => {
         const mapConfig = getState().mapConfig;
-        return axios.get(mapConfig.searchurl, {
+        return axios.get(mapConfig.tdtserverurl+"/geocoder", {
             params: {
                 postStr:{'lon':lng,'lat':lat,'ver':1},
                 type: "query",
@@ -532,6 +533,14 @@ function changeModule(moduletype) {
 
 }
 
+function changeGetPosiModel(posimodel) {
+    
+    return {
+        type: CHNAGE_POSI_MODULE,
+        posimodel
+    }
+}
+
 function selectBusLine(busline) {
     return {
         type: CHNAGE_BUSLINE,
@@ -567,7 +576,7 @@ function setBeginLoc(model, latlng) {
         if (model === 'map') {
             dispatch(geoCodeQuery(latlng.lat,latlng.lng, 'begin'))
         }
-        dispatch(loadRouting());
+        // dispatch(loadRouting());
     }
 }
 
@@ -583,7 +592,7 @@ function setMidLoc(model, latlng) {
             if (model === 'map') {
                 dispatch(geoCodeQuery(latlng.lat,latlng.lng, 'mid'))
             }
-            dispatch(loadRouting());
+            // dispatch(loadRouting());
         } else {
 
             message.warning('公交规划暂不支持添加途径点');
@@ -623,7 +632,7 @@ function setEndLoc(model, latlng) {
         }
         // dispatch(geoCodeQuery(latlng.lat+','+latlng.lng,'end'))
        // dispatch(showSidebar(true, '2'));
-        dispatch(loadRouting());
+       // dispatch(loadRouting());
     }
 }
 
@@ -680,6 +689,8 @@ module.exports = {
     ADD_ENDLOC,
     DELETE_MIDLOC,
     CLEAR_MIDLOCS,
+    changeGetPosiModel,
+    CHNAGE_POSI_MODULE,
     ROUTING_LOADING,
     RESET_ROUTING,
     deleteMidLoc,

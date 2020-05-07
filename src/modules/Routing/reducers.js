@@ -2,7 +2,7 @@
  * @Author: 史涛
  * @Date: 2019-01-05 19:29:34
  * @Last Modified by: 史涛
- * @Last Modified time: 2019-06-17 11:13:33
+ * @Last Modified time: 2020-05-07 15:01:05
  */
 const {
   ROUTING_RESULT,
@@ -21,6 +21,7 @@ const {
   RESET_ROUTING,
   ROUTING_LOADING,
   CLEAR_MIDLOCS,
+  CHNAGE_POSI_MODULE,
   CHNAGE_MODULE
 } = require("./actions");
 
@@ -30,6 +31,7 @@ const initialState = {
   result: "",
   poiresult: "",
   beginloc: null,
+  posimodel:null,
   beginaddress: "",
   midlocs: [],
   endloc: null,
@@ -49,6 +51,7 @@ function routing(state = initialState, action) {
       return assign({}, state, {
         result: action.result,
         jsonresult: action.jsonfea,
+        posimodel:null,
         resultError: null
       });
     }
@@ -76,6 +79,7 @@ function routing(state = initialState, action) {
         endloc: null,
         resultError: null,
         jsonresult:null,
+        posimodel:null,
         beginaddress: "",
         endaddress: "",
         style: "0",
@@ -85,13 +89,14 @@ function routing(state = initialState, action) {
     case ADD_BEGINLOC: {
       return assign({}, state, {
         beginloc: action.latlng
+    
       });
     }
 
     case ADD_BEGINADDRESS: {
       return assign({}, state, {
         beginaddress: action.address,
-        begintype: action.settype
+        begintype: action.settype,
       });
     }
 
@@ -162,6 +167,12 @@ function routing(state = initialState, action) {
     case CHNAGE_MODULE: {
       return assign({}, state, {
         moduletype: action.moduletype
+      });
+    }
+
+    case CHNAGE_POSI_MODULE:{
+      return assign({}, state, {
+        posimodel: action.posimodel
       });
     }
 

@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:33:51 
  * @Last Modified by: 史涛
- * @Last Modified time: 2019-11-22 16:55:22
+ * @Last Modified time: 2020-05-07 10:13:52
  */
 const PropTypes = require("prop-types");
 
@@ -191,7 +191,8 @@ class Feature extends React.Component {
       !isEqual(newProps.bullleoptions, this.props.bullleoptions) ||
       !isEqual(newProps.pieoptions, this.props.pieoptions) ||
       !isEqual(newProps.baroptions, this.props.baroptions) ||
-      !isEqual(newProps.style, this.props.style)
+      !isEqual(newProps.style, this.props.style)||
+      !isEqual(newProps.highlight, this.props.highlight)
     ) {
       this.props.container.removeLayer(this._layer);
       this.props.container.removeLayer(this._labellayer);
@@ -227,7 +228,7 @@ class Feature extends React.Component {
 
   isMarker = props => {
     return (
-      props.styleName === "marker" ||
+      props.styleName === "marker" ||props.isMarker||
       (props.style && (props.style.iconUrl || props.style.iconGlyph))
     );
   };
@@ -259,6 +260,8 @@ class Feature extends React.Component {
         style: props.style,
         zIndexOffset: props.zIndexOffset || 0,
         getColor: props.getColor,
+        draggable:props.draggable,
+        dragendFun:props.dragendFun,
         onEachFeature: (feature, layer) => {
           if (props.highlight) {
             layer.on({
@@ -379,25 +382,78 @@ class Feature extends React.Component {
       props.container.addLayer(this._labellayer);
     }
 
+    if (props.highlight) {
+      if (this._layer instanceof L.Marker || this._layer instanceof L.CircleMarker) {
+
+        let point = this._layer.getLatLng();
+        props.container._map.setView(point,props.highlight.zoom||17);
+        
+      } else {
+        let feabounds = this._layer.getBounds();
+        props.container._map.flyToBounds(feabounds);
+
+      }
+    }
+
     let mapbounds = props.container._map.getBounds();
     if (this._layer instanceof L.Marker||this._layer instanceof L.CircleMarker) {
-      let point = this._layer.getLatLng();
-      if (props.zoomTo) {
-          props.container._map.setView(point,18);
-      }
-  } else {
-      let feabounds = this._layer.getBounds();
-      if (props.zoomTo ) {
-          props.container._map.flyToBounds(feabounds);
-      }
+            let point = this._layer.getLatLng();
+            if (props.zoomTo && !mapbounds.contains(point)) {
+                props.container._map.setView(point,18);
+            }
+        } else {
+            let feabounds = this._layer.getBounds();
+            if (props.zoomTo ) {
+                props.container._map.flyToBounds(feabounds);
+            }
 
-  }
+        }
 
     if (props.title) {
-      this._layer.bindTooltip(props.title, {
-        offset: L.point(12, -20),
-        direction: "right"
+      this._layer.bindTooltip(props.title, props.titleOption||{
+        offset: this.isMarker(props)?L.point(0, -40):L.point(2, 0),
+        direction: this.isMarker(props)?"top":"right"
       });
+      if (props.zIndexOffset > 0) {
+        this._layer.openTooltip();
+      }
+    }
+
+    if(props.rtitle){
+      let maindiv=L.DomUtil.create('div');
+      let titlediv=L.DomUtil.create('div','title',maindiv);
+      titlediv.innerHTML=props.rtitle;
+      let routei=L.DomUtil.create('i','iconfont icon-luxian searchbar_button',maindiv);
+      routei.title='到这去';
+      let nearby=L.DomUtil.create('i','iconfont icon-zuobiao searchbar_button',maindiv);
+      nearby.title='附近查找';
+      L.DomEvent.on(routei,'click',(e)=> {
+        if(props.onRoute){
+          props.onRoute(props.geometry);
+        }
+      })
+
+      L.DomEvent.on(nearby,'click',(e)=> {
+        if(props.onNearBy){
+          props.onNearBy(props.geometry.coordinates.join(","),L.latLng(props.geometry.coordinates.reverse()).toBounds(4000).toBBoxString(),props.rtitle);
+        }
+      })
+     
+      this._layer.bindPopup(maindiv, {
+        // offset:L.point(0, -10),
+        closeButton:false,
+        className:"routepopup",
+        direction: this.isMarker(props)?"top":"right"
+      });
+
+      if(props.highlight){
+        this._layer.openPopup();
+      }else{
+        this._layer.bindTooltip(props.rtitle, {
+          offset: L.point(20, -20),
+          direction: "right"
+        });
+      }
       if (props.zIndexOffset > 0) {
         this._layer.openTooltip();
       }
@@ -411,7 +467,7 @@ class Feature extends React.Component {
           })
           .openPopup();
       } else {
-        this._layer.bindPopup(props.popup);
+        this._layer.bindPopup(props.popup,props.popupOption);
       }
     }
 

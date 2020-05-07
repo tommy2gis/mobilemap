@@ -10,6 +10,7 @@ const assign = require('object-assign');
 
 const initialState = {
     themlist: [],
+    selectedids:[],
     themresult:null
 }
 function themtics(state = initialState, action) {
@@ -38,11 +39,13 @@ function themtics(state = initialState, action) {
         }
 
         case SHOW_THEMATICLAYER:
+            const selectedids=action.visibility?state.selectedids.concat([action.id]):state.selectedids.filter(e=>e!=action.id);
             return assign({}, state, {
                 themlist: state.themlist.map(
                     them =>
-                    them.id === action.id ? { ...them, visibility: !them.visibility } : them
+                    them.id === action.id ? { ...them, visibility: action.visibility } : them
                 ),
+                selectedids:selectedids,
                 resultError: null
             });
 

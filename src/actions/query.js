@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:33:32 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-06 14:35:00
+ * @Last Modified time: 2020-05-07 10:52:19
  */
 
 const FEATURE_TYPE_LOADED = 'FEATURE_TYPE_LOADED';
@@ -25,8 +25,6 @@ const CURRENT_RESPONSE_TIME='CURRENT_RESPONSE_TIME';
 const QUERY_PROMPTRESULT='QUERY_PROMPTRESULT';
 const NEARBY_LOCINFO='NEARBY_LOCINFO';
 const axios = require('axios');
-const L=require('leaflet');
-const {zoomToPoint}=require('../actions/map');
 import {
     message
 } from 'antd';
@@ -148,11 +146,11 @@ function onClickResult(clickid) {
             type: CLICK_RESULTINDEX,
             clickid
         });
-        axios.get(ServerUrl + '/gateway/map/hotCount/heat?id='+clickid).then((response) => {
-            console.info(response);
-        }).catch((e) => {
-         console.info(e);
-        });
+        // axios.get(ServerUrl + '/gateway/map/hotCount/heat?id='+clickid).then((response) => {
+        //     console.info(response);
+        // }).catch((e) => {
+        //  console.info(e);
+        // });
     }
 
 }
@@ -276,7 +274,6 @@ function query(key) {
             
             dispatch(clearSimpleResult());
             if(response.data.pois){
-                dispatch(queryall(key || query.key));
                 dispatch(querySearchResponse(addSmallClassAttr(response.data.pois),Number(response.data.count)));
             }else if(response.data.prompt){
                 dispatch(querySearchResponse([]));

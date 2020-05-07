@@ -2,14 +2,15 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:29:54 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-06 14:48:13
+ * @Last Modified time: 2020-05-07 09:46:02
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Card, Input, AutoComplete, Tooltip,Icon } from 'antd';
 import { query, resetQuery, queryOnFocus, changeQueryKey, clearSimpleResult,simpleQuery } from '../../actions/query';
 import PropTypes from 'prop-types';
-import './searchbar.css'
+import ResultList from './list';
+import './searchbar.less'
 
 const Option = AutoComplete.Option;
 
@@ -132,6 +133,8 @@ class SearchBar extends Component {
 
 
                 </Card>
+                {result?<ResultList></ResultList>:null}
+                
             </div>
         );
     }

@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:34:04 
  * @Last Modified by: 史涛
- * @Last Modified time: 2019-11-24 21:04:57
+ * @Last Modified time: 2020-05-07 15:17:44
  */
 var L = require('leaflet');
 const PropTypes = require('prop-types');
@@ -107,8 +107,6 @@ class LeafletMap extends React.Component {
                     callback: (e) => {
                         if (this.props.setBeginLoc) {
                             this.props.setBeginLoc('map',e.latlng);
-
-
                         }
                     }
                 },
@@ -288,8 +286,8 @@ class LeafletMap extends React.Component {
         // if props are the same nothing to do, otherwise
         // we need to check if the new center is equal to map center
         const centerIsNotUpdated = propsCentersEqual ||
-            isNearlyEqual(newCenter.x, mapCenter.lng) &&
-            isNearlyEqual(newCenter.y, mapCenter.lat);
+            isNearlyEqual(newCenter.x, currentCenter.x) &&
+            isNearlyEqual(newCenter.y, currentCenter.y);
 
         // getting all zoom values we need to check
         const newZoom = newProps.zoom;
@@ -307,6 +305,7 @@ class LeafletMap extends React.Component {
         } else if (!zoomIsNotUpdated) {
             this.map.setZoom(newProps.zoom);
         } else if (!centerIsNotUpdated) {
+            this.props.centerChanged(newProps.center);
             this.map.setView([newProps.center.y, newProps.center.x]);
         }
     };

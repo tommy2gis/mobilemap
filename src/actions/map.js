@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:33:28 
  * @Last Modified by: 史涛
- * @Last Modified time: 2019-11-19 10:49:32
+ * @Last Modified time: 2020-05-07 10:44:54
  */
 const CHANGE_MAP_VIEW = 'CHANGE_MAP_VIEW';
 const CHANGE_MODEL='CHANGE_MODEL';

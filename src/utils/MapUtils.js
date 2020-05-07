@@ -1,8 +1,8 @@
 /*
  * @Author: 史涛 
  * @Date: 2019-01-05 19:32:01 
- * @Last Modified by:   史涛 
- * @Last Modified time: 2019-01-05 19:32:01 
+ * @Last Modified by: 史涛
+ * @Last Modified time: 2020-05-07 10:17:41
  */
 
 const DEFAULT_SCREEN_DPI = 96;
@@ -52,6 +52,27 @@ function getSimpleGeomType(geomType = "Point") {
     }
 }
 
+function defaultGetZoomForExtent(extent, mapSize,maxZoom) {
+    const wExtent = extent[2] - extent[0];
+    const hExtent = extent[3] - extent[1];
+
+    const xResolution = Math.abs(wExtent / mapSize.width);
+    const yResolution = Math.abs(hExtent / mapSize.height);
+    const extentResolution = Math.max(xResolution, yResolution);
+
+    const resolutions = [];
+    for (var i = 0; i < 21; i++) {
+        resolutions[i] = 1.40625 / Math.pow(2, i);
+    };
+
+    const {zoom, ...other} = resolutions.reduce((previous, resolution, index) => {
+        const diff = Math.abs(resolution - extentResolution);
+        return diff > previous.diff ? previous : {diff: diff, zoom: index};
+    }, {diff: Number.POSITIVE_INFINITY, zoom: 0});
+
+    return Math.max(0, Math.min(zoom, maxZoom));
+}
+
 
 module.exports = {
     EXTENT_TO_ZOOM_HOOK,
@@ -64,5 +85,6 @@ module.exports = {
     isSimpleGeomType,
     getSimpleGeomType,
     registerHook,
+    defaultGetZoomForExtent,
     getHook,
 };

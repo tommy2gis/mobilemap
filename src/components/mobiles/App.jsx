@@ -2,10 +2,11 @@ import React from "react";
 const axios = require("axios");
 import { connect } from "react-redux";
 import { Toast, NavBar, InputItem } from "antd-mobile";
-import { changeMapView, mouseDownOnMap, changeModel } from "../../actions/map";
+import { changeMapView, mouseDownOnMap, changeModel,zoomToPoint } from "../../actions/map";
 import { endDrawing } from "../../actions/draw";
 import { switchLayers } from "../../actions/layers";
 import { getUserLocation } from "../../actions/query";
+import {setBeginLoc,setEndLoc} from '../../modules/Routing/actions'
 import SearchBar from "../../modules/SearchBar/searchbar";
 import Routing from "../../modules/Routing/routing";
 import LMap from "../map/Map";
@@ -16,6 +17,7 @@ import ZoomControl from "../map/ZoomControl";
 import { NavLink } from "react-router-dom";
 import LayerSwitch from "../mobiles/LayerSwitch";
 import MapCenterCoord from "../map/MapCenterCoord";
+import { defaultGetZoomForExtent } from "../../utils/MapUtils";
 import "leaflet/dist/leaflet.css";
 import "./style.less";
 import "../../themes/iconfont/iconfont.css";
@@ -38,57 +40,112 @@ class App extends React.Component {
     this.weixin();
   }
 
+  componentWillReceiveProps(newProps) {
+    if (
+      newProps.query.result &&
+      newProps.query.result !== this.props.query.result
+    ) {
+      if (newProps.query.result) {
+        let latlngs = [];
+        newProps.query.result.forEach(ele => {
+          latlngs.push(
+            L.latLng([
+              Number(ele.lonlat.split(" ")[1]),
+              Number(ele.lonlat.split(" ")[0])
+            ])
+          );
+        });
+        if (latlngs.length > 0) {
+          let bounds = L.latLngBounds(latlngs);
+          let center = bounds.getCenter();
+          let zoom = defaultGetZoomForExtent(
+            bounds.toBBoxString().split(","),
+            this.props.map.size,
+            20
+          );
+          this.props.zoomToPoint({ x: center.lng, y: center.lat }, zoom - 1);
+        }
+      }
+    }
+
+    return false;
+  }
+
+  centerChanged=(center)=>{
+    if(this.props.routing.posimodel === "起"){
+      this.props.setBeginLoc("map", {
+        lat: center.y,
+        lng: center.x,
+      })
+    }else if(this.props.routing.posimodel === "终"){
+      this.props.setEndLoc("map", {
+        lat: center.y,
+        lng: center.x,
+      });
+    }
+  }
+
   weixin = () => {
-    axios
-      .get(ServerUrl + "/wx/config", {
-        params: {
-          url: window.location.href.split("#")[0],
-        },
-      })
-      .then((res) => {
-        let config = res.data.data;
-        // alert(JSON.stringify(config));
-        // alert(JSON.stringify(window.location.href.split('#')[0]))
-        wx.config({
-          debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-          appId: config.appId, // 必填，公众号的唯一标识
-          timestamp: config.timestamp, // 必填，生成签名的时间戳
-          nonceStr: config.nonceStr, // 必填，生成签名的随机串
-          signature: config.signature, // 必填，签名，见附录1
-          jsApiList: [
-            "chooseImage",
-            "previewImage",
-            "uploadImage",
-            "downloadImage",
-            "translateVoice",
-            "getNetworkType",
-            "openLocation",
-            "getLocation",
-            "hideOptionMenu",
-            "showOptionMenu",
-            "hideMenuItems",
-            "showMenuItems",
-            "hideAllNonBaseMenuItem",
-            "showAllNonBaseMenuItem",
-          ], // 必填，需要使用的JS接口列表，所有JS接口列表见附录2});
-        });
-        wx.ready((res) => {
-          // alert("wx.ready")
-          wx.getLocation({
-            success: (res) => {
-              this.props.getUserLocation(res);
-            },
-            cancel: function(res) {
-              Toast.info("用户拒绝授权获取地理位置", 1);
-            },
-          });
-        });
-        wx.error((err) => {
-          // alert(JSON.stringify(err))
-          Toast.info(JSON.stringify(err), 1);
-        });
-      })
-      .catch((e) => {});
+
+    wx.getLocation({
+      success: (res) => {
+        this.props.getUserLocation(res);
+      },
+      cancel: function(res) {
+        Toast.info("用户拒绝授权获取地理位置", 1);
+      },
+    });
+
+    // axios
+    //   .get(ServerUrl + "/wx/config", {
+    //     params: {
+    //       url: window.location.href.split("#")[0],
+    //     },
+    //   })
+    //   .then((res) => {
+    //     let config = res.data.data;
+    //     // alert(JSON.stringify(config));
+    //     // alert(JSON.stringify(window.location.href.split('#')[0]))
+    //     wx.config({
+    //       debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+    //       appId: config.appId, // 必填，公众号的唯一标识
+    //       timestamp: config.timestamp, // 必填，生成签名的时间戳
+    //       nonceStr: config.nonceStr, // 必填，生成签名的随机串
+    //       signature: config.signature, // 必填，签名，见附录1
+    //       jsApiList: [
+    //         "chooseImage",
+    //         "previewImage",
+    //         "uploadImage",
+    //         "downloadImage",
+    //         "translateVoice",
+    //         "getNetworkType",
+    //         "openLocation",
+    //         "getLocation",
+    //         "hideOptionMenu",
+    //         "showOptionMenu",
+    //         "hideMenuItems",
+    //         "showMenuItems",
+    //         "hideAllNonBaseMenuItem",
+    //         "showAllNonBaseMenuItem",
+    //       ], // 必填，需要使用的JS接口列表，所有JS接口列表见附录2});
+    //     });
+    //     wx.ready((res) => {
+    //       // alert("wx.ready")
+    //       wx.getLocation({
+    //         success: (res) => {
+    //           this.props.getUserLocation(res);
+    //         },
+    //         cancel: function(res) {
+    //           Toast.info("用户拒绝授权获取地理位置", 1);
+    //         },
+    //       });
+    //     });
+    //     wx.error((err) => {
+    //       // alert(JSON.stringify(err))
+    //       Toast.info(JSON.stringify(err), 1);
+    //     });
+    //   })
+    //   .catch((e) => {});
   };
 
   /**
@@ -137,12 +194,27 @@ class App extends React.Component {
    */
   renderLayers = (layers) => {
     const projection = this.props.map.projection || "EPSG:3857";
+    const {themlist,selectedids}=this.props.thematics||{themlist:[],selectedids:[]};
+    const selthemlist=themlist.filter(f => selectedids.includes(f.id)).map(them => {
+      if(them.serviceType==='map'){
+        return {"id":them.id,
+        "title": them.alias,
+        "url": "http://geowork.wicp.vip:25081"+them.proxy_url,
+        "type": "ersidylayer",
+        "name": them.alias,
+        "layers":[0],
+        "visibility": true,
+        "opacity":0.8,
+        "layerindex":"0",
+        "f":"image"}
+      }
+    
+    });
     if (layers) {
       if (layers.refreshing) {
         layers = layers.refreshing;
       }
-      return layers
-        .map((layer) => {
+      return layers.concat(selthemlist).map((layer) => {
           return (
             <LLayer type={layer.type} key={layer.name} options={layer}>
               {this.renderLayerContent(layer, projection)}
@@ -161,7 +233,46 @@ class App extends React.Component {
           >
             {this.renderLocationContent()}
           </LLayer>,
-        ]);
+        ]).concat([
+          <LLayer
+            type="vector"
+            key="query"
+            options={{
+              name: "query",
+              type: "vector",
+              visibility: true
+            }}
+          >
+            {this.renderQueryContent()}
+          </LLayer>
+        ])
+        .concat([
+          <LLayer
+            type="vector"
+            key="routing"
+            options={{
+              name: "routing",
+              type: "vector",
+              visibility: true
+            }}
+          >
+            {this.renderRoutingContent()}
+          </LLayer>
+        ]) .concat([
+          <LLayer
+            type="vector"
+            key="routingposition"
+            options={{
+              name: "routing",
+              type: "vector",
+              visibility: true
+            }}
+          >
+            {this.renderGetPosition()}
+          </LLayer>
+        ])
+        
+        ;
     }
     return null;
   };
@@ -202,35 +313,283 @@ class App extends React.Component {
   };
 
   /**
+   *渲染查询结果
+   *
+   * @returns
+   */
+  renderQueryContent = () => {
+    if (this.props.query.result) {
+      return this.props.query.result.map((item, index) => {
+        return this.createMarker(
+          [
+            Number(item.lonlat.split(" ")[0]),
+            Number(item.lonlat.split(" ")[1])
+          ],
+          {
+            style: {
+              iconGlyph: "number",
+              iconColor:
+                this.props.query.hoverid == item.hotPointID
+                  ? "cyan"
+                  : "orange-dark",
+              number: index + 1
+            },
+            key: item.hotPointID,
+            rtitle: item.name,
+            highlight:
+              this.props.query.clickid == item.hotPointID ? true : false,
+            onRoute: geometry => {
+              this.props.resetQuery();
+              this.props.setEndLoc("map", {
+                lat: geometry.coordinates[1],
+                lng: geometry.coordinates[0]
+              });
+            },
+            onNearBy: (point,bounds, title) => {
+              this.props.resetQuery();
+              this.props.setNearBy(point,bounds, title);
+            },
+            zIndexOffset: this.props.query.hoverid == item.hotPointID ? 100 : 0
+          }
+        );
+      });
+    }
+    return null;
+  };
+
+  renderGetPosition=()=>{
+    const {map,routing} = this.props;
+    if(!routing.posimodel){
+      return null
+    }
+    
+    return this.createMarker(
+      [map.center.x, map.center.y],
+      {
+        style: {
+          iconGlyph: "number",
+          iconColor: "green-light",
+          number: routing.posimodel
+        },
+        key: "getbegin"
+      }
+    )
+  }
+
+  /**
+   *渲染路径起点 终点 途经点
+   *
+   * @returns
+   */
+  renderRoutingContent = () => {
+    let routlayers = [];
+
+    ["beginloc", "midloc", "endloc", "result", "jsonresult"].forEach(key => {
+      if (key == "beginloc" && this.props.routing.beginloc) {
+        routlayers.push(
+          this.createMarker(
+            [this.props.routing.beginloc.lng, this.props.routing.beginloc.lat],
+            {
+              style: {
+                iconGlyph: "number",
+                iconColor: "green-light",
+                number: "起"
+              },
+              key: "begin"
+            }
+          )
+        );
+      } else if (key == "midloc" && this.props.routing.midlocs) {
+        this.props.routing.midlocs.forEach((ele, index) => {
+          routlayers.push(
+            this.createMarker([ele.latlng.lng, ele.latlng.lat], {
+              key: "mid" + index,
+              style: { iconGlyph: "number", iconColor: "yellow", number: "途" }
+            })
+          );
+        });
+      } else if (key == "endloc" && this.props.routing.endloc) {
+        routlayers.push(
+          this.createMarker(
+            [this.props.routing.endloc.lng, this.props.routing.endloc.lat],
+            {
+              key: "end",
+              style: {
+                iconGlyph: "number",
+                iconColor: "orange-dark",
+                number: "终"
+              }
+            }
+          )
+        );
+      } else if (key == "jsonresult" && this.props.routing.jsonresult) {
+        routlayers.push(this.createRoutingLine(this.props.routing.jsonresult));
+      } else if (
+        key == "result" &&
+        this.props.routing.busline &&
+        this.props.routing.result.results
+      ) {
+        routlayers.push(this.createBusLine(this.props.routing.result.results));
+        routlayers.push(
+          this.createBusStation(this.props.routing.result.results)
+        );
+      }
+    });
+
+    return routlayers;
+  };
+
+  /**
+   *创建公交路径线
+   *
+   * @param {*} datas
+   * @returns
+   */
+  createBusLine = datas => {
+    let lines = datas[0].lines[this.props.routing.busline].segments;
+    let i = 0;
+    return lines.map(ele => {
+      i++;
+      let line = ele.segmentLine[0];
+      let points = line.linePoint.split(";");
+      let lnglats = [];
+      let style = null;
+      points.forEach(point => {
+        if (point.indexOf(",") != -1) {
+          var lnglat = point.split(",");
+          lnglats.push([Number(lnglat[0]), Number(lnglat[1])]);
+        }
+      });
+
+      switch (ele.segmentType) {
+        case 1:
+          style = {
+            radius: 5,
+            color: "#BA92F1",
+            dashArray: "4",
+            weight: 4,
+            opacity: 0.8
+          };
+          break;
+        case 2:
+          style = {
+            radius: 5,
+            color: "#2196f3",
+            weight: 8,
+            opacity: 0.8
+          };
+          break;
+        case 3:
+          style = {
+            radius: 5,
+            color: "#2196f3",
+            weight: 8,
+            opacity: 0.8
+          };
+          break;
+        default:
+          style = {
+            radius: 5,
+            color: "#2196f3",
+            weight: 8,
+            opacity: 0.8
+          };
+          break;
+      }
+      let fea = {
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "LineString",
+          coordinates: lnglats
+        },
+        style: style
+      };
+      return (
+        <Feature
+          key={"busrouting" + i}
+          type={fea.type}
+          crs={this.props.map.projection}
+          geometry={fea.geometry}
+          featuresCrs={"EPSG:4326"}
+          style={fea.style || this.props.style || null}
+          properties={fea.properties}
+        />
+      );
+    });
+  };
+
+  /**
+   *创建公交点要素
+   *
+   * @param {*} datas
+   * @returns
+   */
+  createBusStation = datas => {
+    let lines = datas[0].lines[this.props.routing.busline].segments;
+    let i = 0;
+    return lines.map(ele => {
+      i++;
+      let latlon = ele.stationEnd.lonlat.split(",");
+      let latlon2 = ele.stationStart.lonlat.split(",");
+      if (ele.segmentType != 1) {
+        return [
+          this.createMarker([Number(latlon[0]), Number(latlon[1])], {
+            style: {
+              iconGlyph: " icon-luxian1",
+              iconColor: "cyan",
+              iconPrefix: "iconfont"
+            }
+          }),
+          this.createMarker([Number(latlon2[0]), Number(latlon2[1])], {
+            style: {
+              iconGlyph: " icon-luxian1",
+              iconColor: "cyan",
+              iconPrefix: "iconfont"
+            }
+          })
+        ];
+      }
+    });
+  };
+
+  /**
+   *创建路径线
+   *
+   * @param {*} data
+   * @returns
+   */
+  createRoutingLine = fea => {
+    return (
+      <Feature
+        key="routingall"
+        type={fea.type}
+        crs={this.props.map.projection}
+        geometry={fea.geometry}
+        featuresCrs={"EPSG:4326"}
+        style={fea.style || this.props.style || null}
+        properties={fea.properties}
+      />
+    );
+  };
+
+
+  /**
    *创建要素
    *
-   * @param {*} fea
+   * @param {*} location
    * @param {*} option
    * @returns
    */
-  createMarker = (fea, option) => {
-    if (typeof fea.geometry != "object") {
-      fea.geometry = JSON.parse(fea.geometry);
-      //fea.geometry.indexOf('type')>-1?JSON.parse(fea.geometry):parse(fea.geometry);
-    }
-
-    let style =
-      option.style ||
-      (fea.geometry.type == "Point"
-        ? {
-            iconGlyph: "embassy",
-            iconColor: "cyan",
-            iconPrefix: "map-icon",
-            iconLibrary: "extra",
-          }
-        : {
-            color: "#eee",
-            weight: 4,
-            opacity: 0.8,
-            fill: true,
-            fillColor: "#000",
-            fillOpacity: 0.8,
-          });
+  createMarker = (location, option) => {
+    let fea = {
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: location
+      },
+      properties: { styleName: option.styleName || "marker" }
+    };
     return (
       <Feature
         key={option.key}
@@ -239,8 +598,12 @@ class App extends React.Component {
         geometry={fea.geometry}
         featuresCrs={"EPSG:4326"}
         styleName={fea.properties.styleName}
-        style={style}
+        style={option.style}
+        rtitle={option.rtitle}
+        highlight={option.highlight}
         title={option.title}
+        onRoute={option.onRoute}
+        onNearBy={option.onNearBy}
         zIndexOffset={option.zIndexOffset || 0}
         properties={fea.properties}
       />
@@ -321,6 +684,7 @@ class App extends React.Component {
 
   render() {
     const { mapConfig, map, draw, query } = this.props;
+    const {result}=this.props.query;
     const model = (map && map.model) || "main";
     const taskcount = (query.tasksresult && query.tasksresult.count) || 0;
     // console.log(this.props.route, this.props.params, this.props.routeParams);
@@ -378,7 +742,9 @@ class App extends React.Component {
               "clientmap " +
               (model === "layerswitch"
                 ? " bottommodel"
-                : model === "routing"
+                : result 
+                ? "searchmodel"
+                :model === "routing"
                 ? "headmodel"
                 : "")
             }
@@ -389,6 +755,7 @@ class App extends React.Component {
               contextmenu={false}
               zoom={map.zoom}
               center={map.center}
+              centerChanged={this.centerChanged}
               onMapViewChanges={this.props.onMapViewChanges}
               onMouseDown={this.handleMouseDown}
               projection={map.projection}
@@ -418,6 +785,7 @@ class App extends React.Component {
 }
 
 require("../map/WMTSLayer");
+require("../map/ARCGISLayer");
 require("../map/VectorLayer");
 
 export default connect(
@@ -431,6 +799,7 @@ export default connect(
       arealocation: state.arealocation,
       routing: state.routing,
       draw: state.draw,
+      thematics:state.thematics,
       sidebar: state.sidebar,
       toolbar: state.toolbar,
     };
@@ -441,6 +810,9 @@ export default connect(
     endDrawing,
     mouseDownOnMap,
     changeModel,
+    zoomToPoint,
+    setBeginLoc,
+    setEndLoc,
     getUserLocation,
   }
 )(App);

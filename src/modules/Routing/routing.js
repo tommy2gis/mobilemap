@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:29:37 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-06 15:47:01
+ * @Last Modified time: 2020-05-07 15:21:03
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
@@ -15,6 +15,7 @@ import {
     changeBusRoutingStyle,
     poiQuery,
     resetRouting,
+    changeGetPosiModel,
     switchOrigDest,
     setBeginLoc,
     loadRouting,
@@ -36,7 +37,9 @@ export class Routing extends Component {
         beginaddress: '',
         endaddress: '',
         showbegionsel: false,
-        showendsel: false
+        showendsel: false,
+        showdetail:false,
+        posimodel:null,
     }
 
     clearAddress = () => {
@@ -258,7 +261,18 @@ export class Routing extends Component {
         this.props.loadRouting();
     }
 
+    beginGetLocation=()=>{
+        this.state.posimodel&&this.props.changeGetPosiModel(this.state.posimodel);
+    }
 
+    beginFocus=()=>{
+        this.setState({posimodel:'起'})
+    }
+
+    endFocus=()=>{
+        this.setState({posimodel:'终'})
+    }
+    
 
     /**
      *
@@ -305,15 +319,14 @@ export class Routing extends Component {
     }
 
     render() {
-        const style = this.props.routing.style;
-        const busstyle = this.props.routing.busstyle;
-
-        const dataSource = this.props.routing.poiresult && this.props.routing.poiresult.map((item, index) => {
+        const {style,busstyle,poiresult} = this.props.routing;
+        const {showdetail,currentinput}=this.state;
+        const dataSource = poiresult && poiresult.map((item, index) => {
             return <AutoComplete.Option key={item.id + index} value={item.x + ',' + item.y + ',' + item.name}>{item.name}</AutoComplete.Option>;
         });
         let carbegindata, carenddata, busbegindata, busenddata;
 
-        switch (this.state.currentinput) {
+        switch (currentinput) {
             case 'car-begin':
                 carbegindata = dataSource;
 
@@ -343,9 +356,10 @@ export class Routing extends Component {
                         <Col span={18} push={4} >
 
                             <AutoComplete
-                                placeholder="输入起点或右击在地图选点"
+                                placeholder="输入起点或地图选点"
                                 allowClear={true}
                                 dataSource={carbegindata}
+                                onFocus={this.beginFocus}
                                 onSearch={(value, model) => this.handlePOISearch(value, 'car-begin')}
                                 onChange={this.handleBeginChange}
                                 onSelect={this.handlePOISelect}
@@ -355,9 +369,10 @@ export class Routing extends Component {
                             </AutoComplete>
                             {this.renderMidPosition()}
                             <AutoComplete
-                                placeholder="输入终点或右击在地图选点"
+                                placeholder="输入终点或地图选点"
                                 allowClear={true}
                                 dataSource={carenddata}
+                                onFocus={this.endFocus}
                                 onSearch={(value, model) => this.handlePOISearch(value, 'car-end')}
                                 onChange={this.handleEndChange}
                                 onSelect={this.handlePOISelect}
@@ -371,10 +386,13 @@ export class Routing extends Component {
                     </Row>
 
                         <Row style={{ marginTop: '10px' }}>
-                            <Col span={10} push={10}>
+                            <Col span={10} push={2}>
+                                <Button onClick={this.beginGetLocation} >地图选点</Button>
+                            </Col>
+                            <Col span={6} push={2}>
                                 <Button onClick={() => { this.props.resetRouting(); this.clearAddress() }}  >清除</Button>
                             </Col>
-                            <Col span={10} push={6}>
+                            <Col span={6} push={2}>
                                 <Button onClick={() => this.checkLocation()}  >开车去</Button>
                             </Col>
                         </Row>
@@ -384,9 +402,10 @@ export class Routing extends Component {
                     <Tabs.TabPane tab="公交" key="routing-bus"><Row>
                         <Col span={18} push={4} >
                             <AutoComplete
-                                placeholder="输入起点或右击在地图选点"
+                                placeholder="输入起点或地图选点"
                                 allowClear={true}
                                 dataSource={busbegindata}
+                                onFocus={this.beginFocus}
                                 onSearch={(value, model) => this.handlePOISearch(value, 'bus-begin')}
                                 onChange={this.handleBeginChange}
                                 onSelect={this.handlePOISelect}
@@ -396,9 +415,10 @@ export class Routing extends Component {
                             </AutoComplete>
 
                             <AutoComplete
-                                placeholder="输入终点或右击在地图选点"
+                                placeholder="输入终点或地图选点"
                                 allowClear={true}
                                 dataSource={busenddata}
+                                onFocus={this.endFocus}
                                 onSearch={(value, model) => this.handlePOISearch(value, 'bus-end')}
                                 onChange={this.handleEndChange}
                                 onSelect={this.handlePOISelect}
@@ -413,11 +433,14 @@ export class Routing extends Component {
                             </span></Col>
                     </Row>
                         <Row style={{ marginTop: '10px' }}>
-                            <Col span={10} push={10}>
+                        <Col span={10} push={2}>
+                                <Button onClick={this.beginGetLocation} >地图选点</Button>
+                            </Col>
+                            <Col span={6} push={2}>
                                 <Button onClick={() => { this.props.resetRouting(); this.clearAddress() }}>清除</Button>
 
                             </Col>
-                            <Col span={10} push={6}>
+                            <Col span={6} push={2}>
                                 <Button onClick={() => this.checkLocation()}  >坐公交</Button>
                             </Col>
 
@@ -463,11 +486,11 @@ export class Routing extends Component {
                     </Collapse>
                 </div>
                 <div className={this.props.routing.result&&!this.state.showbegionsel&&!this.state.showendsel ? "routing_resultpanel" : "routing_resultpanel hidden"} >
-                    {this.props.routing.moduletype == 'routing-car' ? (<Radio.Group value={style} onChange={this.handleTypeChange}>
+                    {this.props.routing.moduletype == 'routing-car' ? (<Radio.Group style={{width:'100%'}} value={style} onChange={this.handleTypeChange}>
                         <Radio.Button value="0">最快线路</Radio.Button>
                         <Radio.Button value="1">最短线路</Radio.Button>
                         <Radio.Button value="2">少走高速</Radio.Button>
-                    </Radio.Group>) : (<Radio.Group value={busstyle} onChange={this.handleBusTypeChange}>
+                    </Radio.Group>) : (<Radio.Group style={{width:'100%'}} value={busstyle} onChange={this.handleBusTypeChange}>
                         <Radio.Button value="1">较快捷</Radio.Button>
                         <Radio.Button value="8">不坐地铁</Radio.Button>
                         <Radio.Button value="2">少换乘</Radio.Button>
@@ -475,11 +498,11 @@ export class Routing extends Component {
                     </Radio.Group>)
 
                     }
-                    {this.props.routing.result.distance ? (<Alert message={'总里程:约' + this.props.routing.result.distance + '公里'} type="info" />) : (null)}
+                    {this.props.routing.result.distance ? ([<Alert style={{width:"calc(100vw - 200px)",float:"left"}} message={'总里程:约' + this.props.routing.result.distance + '公里'} type="info"></Alert>,<Button onClick={()=>{this.setState({showdetail:!this.state.showdetail})}} style={{margin:8,float:"right"}} >显示线路详情</Button>]) : (null)}
 
-                    {this.props.routing.moduletype == 'routing-car' ? (<Collapse bordered={false} accordion >{
+                    {this.props.routing.moduletype == 'routing-car' ? (<Collapse className={showdetail?'':"hidden"} bordered={false} accordion >{
                         this.renderSimpleList()
-                    }</Collapse>) : (<Collapse bordered={false} accordion activeKey={this.props.routing.busline} onChange={this.handleBusCollapseChange}>{
+                    }</Collapse>) : (<Collapse bordered={false} className={showdetail?'':"hidden"} accordion activeKey={this.props.routing.busline} onChange={this.handleBusCollapseChange}>{
                         this.renderSimpleList()
                     }</Collapse>)
 
@@ -510,6 +533,7 @@ export default connect((state) => {
         poiQuery,
         loadRouting,
         switchOrigDest,
+        changeGetPosiModel,
         setBeginLoc,
         setEndLoc,
         changeModule
