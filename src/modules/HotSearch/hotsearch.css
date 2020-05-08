@@ -1,0 +1,110 @@
+.hotsearch_panel .iconfont{
+    height: 35px;
+    width: 35px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.hotsearch_panel i{
+   padding:0 1px;
+}
+.icon-canyin{
+    background-color:#59a2ef !important;
+}
+
+.icon-jiudian{
+    background-color:#b059ef !important;
+}
+
+
+.icon-jingdian{
+    background-color:#d2d63c !important;
+}
+.icon-yiyuan2{
+    background-color:#ef5959 !important;
+}
+.icon-jingdian{
+    background-color:#52d451 !important;
+}
+
+
+
+.hotsearch_label{
+    margin-left: 8px;
+    cursor: pointer;
+}
+
+.hotsearch_panel{
+    text-align: center;
+    text-align: center;
+    position: absolute;
+    top: 40px;
+    z-index: 2000;
+    background-color: #fff;
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px;
+}
+
+.hotsearch_panel .ant-col-4{
+    margin: 10px 14px;
+}
+
+.hotsearch_panel .ant-divider{
+    height: 24px;
+    background: #eee;
+}
+
+.hotsearch_panel a{
+    color: #a9a9a9;
+    width: 20%;
+}
+
+.hotsearch_panel>.ant-divider{
+    height: 1px;
+    background: #eee;
+    margin: 10px 0px;
+    width: auto;
+}
+
+.search_history_list .ant-list-item{
+    padding: 0px;
+    text-align: left;
+    border-bottom: 0px;
+    cursor: pointer;
+}
+
+.search_history_list .ant-list-item:hover{
+    background-color: #eee;
+}
+
+.search_history_list .anticon-clock-circle svg{
+ width: 14px;
+ height: 14px;
+}
+
+.search_history_list .ant-list-item-meta-avatar{
+ margin-right: 4px;
+}
+
+.search_history_list .ant-list-item-meta-title{
+    font-size: 12px;
+}
+
+.wordcloud text{
+    cursor: pointer;
+}
+
+.no-data-text{
+	padding:26px;
+	color:#333;
+	text-align:left;
+}
+
+.no-data-text p{
+	color:#888;
+}
+
+.no-data-text li{
+	line-height:2;
+}

@@ -5,10 +5,13 @@ import { Toast, NavBar, InputItem } from "antd-mobile";
 import { changeMapView, mouseDownOnMap, changeModel,zoomToPoint } from "../../actions/map";
 import { endDrawing } from "../../actions/draw";
 import { switchLayers } from "../../actions/layers";
-import { getUserLocation } from "../../actions/query";
+import { getUserLocation,setNearBy} from "../../actions/query";
 import {setBeginLoc,setEndLoc} from '../../modules/Routing/actions'
 import SearchBar from "../../modules/SearchBar/searchbar";
 import Routing from "../../modules/Routing/routing";
+import {queryThematic} from '../../modules/ThematicList/actions';
+import {changeDrawingStatus} from '../../actions/draw';
+import ResultList from '../../modules/ThematicList/result';
 import LMap from "../map/Map";
 import LLayer from "../map/Layer";
 import Feature from "../map/Feature";
@@ -16,6 +19,7 @@ import DrawSupport from "../map/DrawSupport";
 import ZoomControl from "../map/ZoomControl";
 import { NavLink } from "react-router-dom";
 import LayerSwitch from "../mobiles/LayerSwitch";
+import HotSearch from '../../modules/HotSearch/hotsearch'
 import MapCenterCoord from "../map/MapCenterCoord";
 import { defaultGetZoomForExtent } from "../../utils/MapUtils";
 import "leaflet/dist/leaflet.css";
@@ -23,6 +27,10 @@ import "./style.less";
 import "../../themes/iconfont/iconfont.css";
 import "antd/dist/antd.css";
 import wx from "weixin-js-sdk";
+import {
+  geojsonToArcGIS
+} from "@esri/arcgis-to-geojson-utils";
+import turfbuffer from "@turf/buffer";
 
 class App extends React.Component {
   constructor(props) {
@@ -31,6 +39,7 @@ class App extends React.Component {
       title: "app",
       open: false,
       model: "layerswitch",
+      hotshow:false
     };
   }
 
@@ -664,6 +673,96 @@ class App extends React.Component {
     this.props.changeModel("routing");
   };
 
+  drawSpatial=(type)=>{
+    switch (type) {
+      case "point":
+        this.props.changeDrawingStatus(
+          "start",
+          "CircleMarker",
+          "spatial",
+          [],
+          {},
+          {
+           iconGlyph: 'jiucuoguanli',
+           iconColor: 'cyan',
+           iconPrefix: 'icon'
+       }
+        );
+        break;
+      case "polyline":
+        this.props.changeDrawingStatus(
+          "start",
+          "Line",
+          "spatial",
+          [],
+          {}
+        );
+        break;
+      case "polygon":
+        this.props.changeDrawingStatus(
+          "start",
+          "Polygon",
+          "spatial",
+          [],
+          {}
+        );
+        break;
+        
+      default:
+        break;
+    }
+  }
+
+  onEndDrawing=(geometry, drawOwner)=>{
+    this.props.endDrawing(geometry, drawOwner);
+    const {drawMethod}=this.props.draw;
+    if (drawOwner === "spatial") {
+      
+      geometry=drawMethod === "Polygon"
+      ?geometry:turfbuffer(geometry, 0.005, { units: "kilometers" });
+      const arcgisgeo = geojsonToArcGIS(geometry);
+      const {selectedids} = this.props.thematics;
+
+      if (selectedids.length > 0) {
+        switch (drawMethod) {
+          case "Polygon":
+            this.props.queryThematic(
+              selectedids[0],
+              JSON.stringify(arcgisgeo),
+              "esriGeometryPolygon"
+            );
+            break;
+          case "Line":
+          case "CircleMarker":
+            this.props.queryThematic(
+              selectedids[0],
+              JSON.stringify(arcgisgeo.geometry),
+              "esriGeometryPolygon"
+            );
+            break;
+          default:
+            break;
+        }
+      }
+    } 
+  }
+
+  bufferQuery=()=>{
+    this.setState({hotshow:true})
+    const {tdtserverurl,tdttk}=this.props.mapConfig;
+    return axios.get(tdtserverurl+"/geocoder", {
+      params: {
+          postStr:{'lon':120.570224137,'lat':32.3858,'ver':1},
+          type: "query",
+          tk: tdttk
+      }
+    }).then((response) => {
+        let result=response.data.result;
+        this.props.setNearBy("120.570224137,32.3858",null, result.formatted_address);
+    }).catch((e) => {
+    });
+  }
+
   renderHeadRight = (model) => {
     switch (model) {
       case "main":
@@ -684,7 +783,8 @@ class App extends React.Component {
 
   render() {
     const { mapConfig, map, draw, query } = this.props;
-    const {result}=this.props.query;
+    const {selectedids,themresult}=this.props.thematics;
+    const {result,nearbytitle}=this.props.query;
     const model = (map && map.model) || "main";
     const taskcount = (query.tasksresult && query.tasksresult.count) || 0;
     // console.log(this.props.route, this.props.params, this.props.routeParams);
@@ -705,7 +805,7 @@ class App extends React.Component {
               >
                 线路规划
               </NavBar>,
-              <Routing />,
+              <Routing />
             ]
           ) : null}
 
@@ -726,7 +826,7 @@ class App extends React.Component {
           </ul>
 
           <ul className="left_toolbar">
-            <li className="circlebtn " onClick={this.showLayerChangeControl}>
+            <li className="circlebtn " onClick={this.bufferQuery}>
               <i
                 className="iconfont icon-zhoubian"
                 style={{ color: "#1890FF" }}
@@ -736,6 +836,20 @@ class App extends React.Component {
               <i className="iconfont icon-xianlu"  style={{ color: "#EFA659" }}/>
             </li>
           </ul>
+          { selectedids.length?
+            <ul className="left_spatial_toolbar">
+            <li className="circlebtn  " onClick={()=>this.drawSpatial("point")}>
+              <i className="iconfont icon-dian"  />
+            </li>
+            <li className="circlebtn  " onClick={()=>this.drawSpatial("polyline")}>
+              <i className="iconfont icon-polyline"  />
+            </li>
+            <li className="circlebtn  " onClick={()=>this.drawSpatial("polygon")}>
+              <i className="iconfont icon-polygon"  />
+            </li>
+          </ul>:null
+          }
+          
 
           <div
             className={
@@ -768,15 +882,18 @@ class App extends React.Component {
                 drawOwner={draw.drawOwner}
                 drawMethod={draw.drawMethod}
                 style={draw.style}
-                onEndDrawing={this.props.endDrawing}
+                onEndDrawing={this.onEndDrawing}
                 features={draw.features}
               />
             </LMap>
           </div>
 
+         {!result&&nearbytitle&&<HotSearch></HotSearch>}
+
           <div className="bottom-container">
             {model == "layerswitch" && <LayerSwitch />}
           </div>
+          {themresult&&<ResultList></ResultList>}
         </div>
       );
     }
@@ -814,5 +931,8 @@ export default connect(
     setBeginLoc,
     setEndLoc,
     getUserLocation,
+    queryThematic,
+    setNearBy,
+    changeDrawingStatus
   }
 )(App);

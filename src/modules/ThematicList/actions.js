@@ -4,7 +4,7 @@ const SHOW_THEMATICLAYER='SHOW_THEMATICLAYER';
 const QUERY_THEMATICRESULT='QUERY_THEMATICRESULT';
 const SET_SELECTEDFEATURE='SET_SELECTEDFEATURE';
 import axios from 'axios';
-
+import { query } from 'esri-leaflet';
 
 function loadThematicsList(result) {
     return {
@@ -60,6 +60,7 @@ function queryThematic(serviceId,geometry,geometryType,where) {
         
     };
 }
+
 
 
 module.exports = {

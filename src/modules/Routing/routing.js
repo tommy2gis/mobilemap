@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:29:37 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-07 15:21:03
+ * @Last Modified time: 2020-05-08 17:04:33
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
@@ -498,7 +498,7 @@ export class Routing extends Component {
                     </Radio.Group>)
 
                     }
-                    {this.props.routing.result.distance ? ([<Alert style={{width:"calc(100vw - 200px)",float:"left"}} message={'总里程:约' + this.props.routing.result.distance + '公里'} type="info"></Alert>,<Button onClick={()=>{this.setState({showdetail:!this.state.showdetail})}} style={{margin:8,float:"right"}} >显示线路详情</Button>]) : (null)}
+                    {this.props.routing.result.distance ? ([<Alert style={{width:"calc(100vw - 170px)",float:"left"}} message={'总里程:约' + this.props.routing.result.distance + '公里'} type="info"></Alert>,<Button onClick={()=>{this.setState({showdetail:!this.state.showdetail})}} style={{margin:8,float:"right"}} >显示线路详情</Button>]) : (null)}
 
                     {this.props.routing.moduletype == 'routing-car' ? (<Collapse className={showdetail?'':"hidden"} bordered={false} accordion >{
                         this.renderSimpleList()

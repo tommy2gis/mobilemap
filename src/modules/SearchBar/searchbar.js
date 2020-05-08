@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:29:54 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-07 09:46:02
+ * @Last Modified time: 2020-05-08 16:45:54
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -96,7 +96,7 @@ class SearchBar extends Component {
             <div >
                 <Card className="searchbar_card" bordered={false} >
                     <Input.Group>
-                       {nearbytitle&&<div id="nearby-searchbox-hint">在<span id="nearby-searchbox-hint-center" title={nearbytitle}>{nearbytitle}</span>附近搜索</div>}
+                       {nearbytitle&&<div id="nearby-searchbox-hint">在<span id="nearby-searchbox-hint-center" title={nearbytitle}>{nearbytitle}</span>搜索</div>}
                         <AutoComplete className={nearbytitle?'search_nearby':'search_auto'}
                             placeholder="请输入关键字"
                             dropdownClassName="search_auto_dropdown"
@@ -124,10 +124,12 @@ class SearchBar extends Component {
                                  >
                             </i>
                         </Tooltip>:null}
-
-                        <Tooltip placement="bottom" title={'查询'}>
+                        {(result&&nearbytitle)?null:
+                            <Tooltip placement="bottom" title={'查询'}>
                             <i className="iconfont icon-search searchbar_button querybtn" onClick={() => this.props.onQuery()} ></i>
                         </Tooltip>
+                        }
+                        
 
                     </Input.Group>
 

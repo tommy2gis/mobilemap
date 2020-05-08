@@ -1,8 +1,8 @@
 /*
  * @Author: 史涛 
  * @Date: 2019-01-05 19:33:20 
- * @Last Modified by:   史涛 
- * @Last Modified time: 2019-01-05 19:33:20 
+ * @Last Modified by: 史涛
+ * @Last Modified time: 2020-05-08 13:53:25
  */
 const CHANGE_DRAWING_STATUS = 'CHANGE_DRAWING_STATUS';
 const END_DRAWING = 'DRAW:END_DRAWING';
@@ -52,6 +52,8 @@ function endDrawing(geometry, owner) {
             dispatch(showErrorPanel(true))
             dispatch(changeDrawingStatus('stop', '', owner, [], {}))
         }
+
+     
     }
 }
 

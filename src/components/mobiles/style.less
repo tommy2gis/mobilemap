@@ -273,6 +273,22 @@ html {
     }
   }
 
+  .left_spatial_toolbar{
+    padding: 6px 0px !important;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    top: 180px;
+    left: 10px;
+    z-index: 2000;
+    background-color: #fff;
+    position: absolute !important;
+    margin: 0px;
+    padding: 0px;
+    i,a{
+      font-size: 28px;
+    }
+  }
+
   .left_toolbar{
     padding: 6px 0px !important;
     border-radius: 4px;
@@ -488,4 +504,24 @@ html {
 .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar{
   border: 0px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.spatial_result_card{
+  width: 100%;
+  bottom: 0px;
+  position: absolute !important;
+  z-index: 2000;
+
+  .ant-collapse-content-box{
+      max-height: 200px;
+      overflow-y: auto;
+  }
+  .ant-card-body{
+      height: 40vh;
+      overflow: auto;
+      padding: 0px;
+      .ant-collapse-header{
+          color: #1890ff;
+      }
+  }
 }

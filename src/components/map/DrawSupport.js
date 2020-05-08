@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:33:45 
  * @Last Modified by: 史涛
- * @Last Modified time: 2019-11-25 15:14:13
+ * @Last Modified time: 2020-05-08 11:46:55
  */
 
 const PropTypes = require('prop-types');
@@ -15,7 +15,6 @@ require('leaflet-draw/dist/leaflet.draw.css');
 
 import '@geoman-io/leaflet-geoman-free';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-
 
 
 // var originalOnTouch = L.Draw.Polyline.prototype._onTouch;
@@ -394,7 +393,7 @@ class DrawSupport extends React.Component {
         }
         this.props.map.on('pm:create', this.onDrawCreated, this);
         this.props.map.on('pm:drawstart', this.onDrawStart, this);
-
+        this.props.map.pm.setLang('zh');
         if (newProps.drawMethod === 'LineString' || newProps.drawMethod === 'Line' || newProps.drawMethod === 'MultiLineString') {
             // this.drawControl = new L.Draw.Polyline(this.props.map, {
             //     shapeOptions: {
