@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:31:12 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-06 14:00:14
+ * @Last Modified time: 2020-05-09 10:01:46
  */
 
 const {
@@ -20,7 +20,8 @@ const {
     NEARBY_LOCINFO,
     QUERY_SIMPLERESULT,
     QUERY_PROMPTRESULT,
-    RESET_QUERY
+    RESET_QUERY,
+    LOGIN
 } = require('../actions/query');
 
 const assign = require('object-assign');
@@ -34,6 +35,7 @@ const initialState = {
     page: 10,
     type: '',
     key: '',
+    userinfo:null,
     areakey:null,
     responsetime:'',
     areatype:'',
@@ -61,6 +63,13 @@ function query(state = initialState, action) {
         case QUERY_PROMPTRESULT:{
             return assign({}, state, {
                 prompt: action.result
+            });
+        }
+
+        case LOGIN: {
+            return assign({}, state, {
+                userinfo: action.userinfo,
+                resultError: null
             });
         }
 

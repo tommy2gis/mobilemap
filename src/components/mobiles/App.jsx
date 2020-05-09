@@ -1,11 +1,12 @@
 import React from "react";
 const axios = require("axios");
 import { connect } from "react-redux";
-import { Toast, NavBar, InputItem } from "antd-mobile";
+import { Toast, NavBar, Card } from "antd-mobile";
+import {Drawer, Button} from 'antd';
 import { changeMapView, mouseDownOnMap, changeModel,zoomToPoint } from "../../actions/map";
 import { endDrawing } from "../../actions/draw";
 import { switchLayers } from "../../actions/layers";
-import { getUserLocation,setNearBy} from "../../actions/query";
+import { getUserLocation,setNearBy,loginout} from "../../actions/query";
 import {setBeginLoc,setEndLoc} from '../../modules/Routing/actions'
 import SearchBar from "../../modules/SearchBar/searchbar";
 import Routing from "../../modules/Routing/routing";
@@ -38,6 +39,7 @@ class App extends React.Component {
     this.state = {
       title: "app",
       open: false,
+      userinfoopen:false,
       model: "layerswitch",
       hotshow:false
     };
@@ -763,6 +765,20 @@ class App extends React.Component {
     });
   }
 
+
+
+  showUserinfoDrawer = () => {
+    this.setState({
+      userinfoopen: true,
+    });
+  };
+
+  onUserinfoDrawerClose = () => {
+    this.setState({
+      userinfoopen: false,
+    });
+  };
+
   renderHeadRight = (model) => {
     switch (model) {
       case "main":
@@ -784,118 +800,85 @@ class App extends React.Component {
   render() {
     const { mapConfig, map, draw, query } = this.props;
     const {selectedids,themresult}=this.props.thematics;
-    const {result,nearbytitle}=this.props.query;
+    const {result,nearbytitle,userinfo}=this.props.query;
     const model = (map && map.model) || "main";
     const taskcount = (query.tasksresult && query.tasksresult.count) || 0;
     // console.log(this.props.route, this.props.params, this.props.routeParams);
     if (mapConfig && mapConfig.map) {
-      return (
-        <div className="container">
-          {(model === "main"||model === "layerswitch") ? (
-            <SearchBar />
-          ) : model === "routing" ? (
-            [
-              <NavBar
-                mode="light"
-                onLeftClick={() => {
+      return <div className="container">
+          {model === "main" || model === "layerswitch" ? <SearchBar /> : model === "routing" ? [<NavBar mode="light" onLeftClick={() => {
                   this.props.changeModel("main");
-                }}
-                leftContent={this.renderHeadLeft(model)}
-                rightContent={this.renderHeadRight(model)}
-              >
+                }} leftContent={this.renderHeadLeft(model)} rightContent={this.renderHeadRight(model)}>
                 线路规划
-              </NavBar>,
-              <Routing />
-            ]
-          ) : null}
+              </NavBar>, <Routing />] : null}
 
           <ul className="right_toolbar">
             <li className="circlebtn " onClick={this.showLayerChangeControl}>
-              <i className="iconfont icon-tuceng" 
-              style={{ color: "#EFA659" }}
-              
-              />
+              <i className="iconfont icon-tuceng" style={{ color: "#EFA659" }} />
             </li>
             <li className="circlebtn ">
               <NavLink to="/thematics" className="iconfont icon-zhuanti1" replace />
             </li>
             <li className="circlebtn " onClick={this.getLocation}>
-              <i className="iconfont icon-dingwei" style={{ color: "#B059EF" }}/>
-              
+              <i className="iconfont icon-dingwei" style={{ color: "#B059EF" }} />
+            </li>
+            <li className="circlebtn ">
+              {userinfo ? (
+                <i
+                  className="iconfont icon-yonghu"
+                  onClick={this.showUserinfoDrawer}
+                  style={{ color: "#B059EF" }}
+                />
+              ) : (
+                <NavLink
+                  to="/login"
+                  className="iconfont icon-yonghu"
+                  replace
+                />
+              )}
             </li>
           </ul>
 
           <ul className="left_toolbar">
             <li className="circlebtn " onClick={this.bufferQuery}>
-              <i
-                className="iconfont icon-zhoubian"
-                style={{ color: "#1890FF" }}
-              />
+              <i className="iconfont icon-zhoubian" style={{ color: "#1890FF" }} />
             </li>
             <li className="circlebtn  " onClick={this.showRoutingPanel}>
-              <i className="iconfont icon-xianlu"  style={{ color: "#EFA659" }}/>
+              <i className="iconfont icon-xianlu" style={{ color: "#EFA659" }} />
             </li>
           </ul>
-          { selectedids.length?
-            <ul className="left_spatial_toolbar">
-            <li className="circlebtn  " onClick={()=>this.drawSpatial("point")}>
-              <i className="iconfont icon-dian"  />
-            </li>
-            <li className="circlebtn  " onClick={()=>this.drawSpatial("polyline")}>
-              <i className="iconfont icon-polyline"  />
-            </li>
-            <li className="circlebtn  " onClick={()=>this.drawSpatial("polygon")}>
-              <i className="iconfont icon-polygon"  />
-            </li>
-          </ul>:null
-          }
-          
+          {selectedids.length ? <ul className="left_spatial_toolbar">
+              <li className="circlebtn  " onClick={() => this.drawSpatial("point")}>
+                <i className="iconfont icon-dian" />
+              </li>
+              <li className="circlebtn  " onClick={() => this.drawSpatial("polyline")}>
+                <i className="iconfont icon-polyline" />
+              </li>
+              <li className="circlebtn  " onClick={() => this.drawSpatial("polygon")}>
+                <i className="iconfont icon-polygon" />
+              </li>
+            </ul> : null}
 
-          <div
-            className={
-              "clientmap " +
-              (model === "layerswitch"
-                ? " bottommodel"
-                : result 
-                ? "searchmodel"
-                :model === "routing"
-                ? "headmodel"
-                : "")
-            }
-          >
-            <LMap
-              id="map"
-              ref="map"
-              contextmenu={false}
-              zoom={map.zoom}
-              center={map.center}
-              centerChanged={this.centerChanged}
-              onMapViewChanges={this.props.onMapViewChanges}
-              onMouseDown={this.handleMouseDown}
-              projection={map.projection}
-            >
+          <div className={"clientmap " + (model === "layerswitch" ? " bottommodel" : result ? "searchmodel" : model === "routing" ? "headmodel" : "")}>
+            <LMap id="map" ref="map" contextmenu={false} zoom={map.zoom} center={map.center} centerChanged={this.centerChanged} onMapViewChanges={this.props.onMapViewChanges} onMouseDown={this.handleMouseDown} projection={map.projection}>
               {this.renderLayers(mapConfig.layers)}
               {model == "dataedit" && <MapCenterCoord />}
               <ZoomControl />
-              <DrawSupport
-                drawStatus={draw.drawStatus}
-                drawOwner={draw.drawOwner}
-                drawMethod={draw.drawMethod}
-                style={draw.style}
-                onEndDrawing={this.onEndDrawing}
-                features={draw.features}
-              />
+              <DrawSupport drawStatus={draw.drawStatus} drawOwner={draw.drawOwner} drawMethod={draw.drawMethod} style={draw.style} onEndDrawing={this.onEndDrawing} features={draw.features} />
             </LMap>
           </div>
 
-         {!result&&nearbytitle&&<HotSearch></HotSearch>}
+          {!result && nearbytitle && <HotSearch />}
+
+          {userinfo && <Drawer title={userinfo.displayname} placement="left" className="userinfoDraw" onClose={this.onUserinfoDrawerClose} visible={this.state.userinfoopen}>
+              <Button onClick={this.props.loginout}>登出</Button>
+            </Drawer>}
 
           <div className="bottom-container">
             {model == "layerswitch" && <LayerSwitch />}
           </div>
-          {themresult&&<ResultList></ResultList>}
-        </div>
-      );
+          {themresult && <ResultList />}
+        </div>;
     }
     return null;
   }
@@ -930,6 +913,7 @@ export default connect(
     zoomToPoint,
     setBeginLoc,
     setEndLoc,
+    loginout,
     getUserLocation,
     queryThematic,
     setNearBy,

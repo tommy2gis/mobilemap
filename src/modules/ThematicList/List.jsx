@@ -96,11 +96,11 @@ class List extends Component {
   };
 
   getServiceList = () => {
-    let token = JSON.parse(getCookie("userinfo"));
+    const  {userinfo} = this.props.query;
     return axios
       .get(
         ServerUrl + "/portal/user/service",
-        token && { headers: { token: token.geokey } }
+        userinfo && { headers: { token: userinfo.geokey } }
       )
       .then((response) => {
         const list = response.data.result.filter(
@@ -126,11 +126,11 @@ class List extends Component {
   };
 
   getList = () => {
-    let token = JSON.parse(getCookie("userinfo"));
+    const  {userinfo} = this.props.query
     return axios
       .get(
         ServerUrl + "/portal/service/catalog",
-        token && { headers: { token: token.geokey } }
+        userinfo && { headers: { token: userinfo.geokey } }
       )
       .then((response) => {
         this.setState({ list: response.data.result, loading: false });
@@ -155,7 +155,7 @@ class List extends Component {
 }
 
 export default connect((state) => {
-  return { thematics: state.thematics }
+  return { thematics: state.thematics,query:state.query }
 }, {
   loadThematicsList,showThematicLayer 
   })(List);
