@@ -2,7 +2,7 @@
  * @Author: 史涛
  * @Date: 2019-01-05 19:33:32
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-09 14:06:26
+ * @Last Modified time: 2020-05-14 14:33:14
  */
 
 const FEATURE_TYPE_LOADED = "FEATURE_TYPE_LOADED";
@@ -25,6 +25,7 @@ const CURRENT_RESPONSE_TIME = "CURRENT_RESPONSE_TIME";
 const QUERY_PROMPTRESULT = "QUERY_PROMPTRESULT";
 const NEARBY_LOCINFO = "NEARBY_LOCINFO";
 const LOGIN = "LOGIN";
+const GET_USERLOCATION='GET_USERLOCATION';
 const axios = require("axios");
 import md5 from "js-md5";
 import qs from 'qs';
@@ -43,8 +44,7 @@ function loginResponse(userinfo) {
 
 function login(userName, passWord) {
   return (dispatch, getState) => {
-    return axios.post(
-        ServerUrl + "/core/system/login",
+    return axios.post("https://www.geospark.cn/gateway/core/system/login",
         qs.stringify({ userName: userName,
             password: md5(passWord),
           })
@@ -93,6 +93,15 @@ function featureTypeLoaded(typeName, featureType) {
     type: FEATURE_TYPE_LOADED,
     typeName,
     featureType,
+  };
+}
+
+
+
+function getUserLocation(loc) {
+  return {
+      type: GET_USERLOCATION,
+      loc
   };
 }
 
@@ -546,6 +555,8 @@ module.exports = {
   query,
   login,
   loginout,
+  getUserLocation,
+  GET_USERLOCATION,
   LOGIN,
   resetQuery,
 };

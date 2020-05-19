@@ -28,10 +28,10 @@ module.exports = {
     contentBase: "./public",
     port: 8080,
     proxy: {
-            // "/mobile/*": {
-            //   target: 'http://localhost:10001',
-            //   changeOrigin: true 
-            // },
+            "/wx-server/*": {
+              target: 'https://www.geospark.cn/wx-server',
+              changeOrigin: true 
+            },
             "ArcGIS/*":{
                 target: 'http://218.2.102.206',
                 changeOrigin: true

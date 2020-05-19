@@ -114,13 +114,13 @@ class App extends React.Component {
     // });
 
     axios
-      .get(ServerUrl + "/wx/config", {
+      .get(WXServerUrl + "/wx/config", {
         params: {
           url: window.location.href.split("#")[0],
         },
       })
       .then((res) => {
-        let config = res.data.data;
+        let config = res.data.result;
         // alert(JSON.stringify(config));
         // alert(JSON.stringify(window.location.href.split('#')[0]))
         wx.config({
@@ -147,10 +147,11 @@ class App extends React.Component {
           ], // 必填，需要使用的JS接口列表，所有JS接口列表见附录2});
         });
         wx.ready((res) => {
-          // alert("wx.ready")
+         console.log("wx.ready");
           wx.getLocation({
             success: (res) => {
               this.props.getUserLocation(res);
+             
             },
             cancel: function(res) {
               Toast.info("用户拒绝授权获取地理位置", 1);
@@ -163,6 +164,41 @@ class App extends React.Component {
         });
       })
       .catch((e) => {});
+  };
+
+  renderLocationContent = () => {
+    const loc = this.props.query.curloc;
+    if (loc) {
+      let style = {
+        color: "#eee",
+        weight: 4,
+        opacity: 0.8,
+        fill: true,
+        fillColor: "#fd8e2c",
+        fillOpacity: 1
+      };
+      let fea = {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [loc.longitude, loc.latitude]
+        },
+        properties: {}
+      };
+      return (
+        <Feature
+          key="userloc"
+          type={fea.type}
+          crs={this.props.map.projection}
+          geometry={fea.geometry}
+          featuresCrs={"EPSG:4326"}
+          style={style}
+          zoomTo={true}
+          properties={fea.properties}
+        />
+      );
+    }
+    return null;
   };
 
   /**
@@ -302,40 +338,6 @@ class App extends React.Component {
     return null;
   };
 
-  renderLocationContent = () => {
-    const loc = this.props.query.curloc;
-    if (loc) {
-      let style = {
-        color: "#eee",
-        weight: 4,
-        opacity: 0.8,
-        fill: true,
-        fillColor: "#fd8e2c",
-        fillOpacity: 1,
-      };
-      let fea = {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [loc.longitude, loc.latitude],
-        },
-        properties: {},
-      };
-      return (
-        <Feature
-          key="userloc"
-          type={fea.type}
-          crs={this.props.map.projection}
-          geometry={fea.geometry}
-          featuresCrs={"EPSG:4326"}
-          style={style}
-          zoomTo={true}
-          properties={fea.properties}
-        />
-      );
-    }
-    return null;
-  };
 
   /**
    *渲染查询结果
@@ -675,6 +677,7 @@ class App extends React.Component {
     wx.getLocation({
       success: (res) => {
         this.props.getUserLocation(res);
+        this.props.zoomToPoint({ x: res.longitude, y: res.latitude }, 17);
       },
       cancel: function(res) {
         Toast.info("用户拒绝授权获取地理位置", 1);
@@ -997,7 +1000,7 @@ export default connect(
     endDrawing,
     mouseDownOnMap,
     changeModel,
-    zoomToPoint,
+    n,
     setBeginLoc,
     setEndLoc,
     loginout,

@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:31:12 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-09 10:01:46
+ * @Last Modified time: 2020-05-14 14:58:30
  */
 
 const {
@@ -20,6 +20,7 @@ const {
     NEARBY_LOCINFO,
     QUERY_SIMPLERESULT,
     QUERY_PROMPTRESULT,
+    GET_USERLOCATION,
     RESET_QUERY,
     LOGIN
 } = require('../actions/query');
@@ -44,6 +45,7 @@ const initialState = {
     resultcollapsed: false,
     simpleresult: [],
     nearbyextend:'',
+    curloc: null,
     hoverid: null,
     clickid:null,
     selectedid: null,
@@ -56,6 +58,13 @@ function query(state = initialState, action) {
             return assign({}, state, {
                 result: action.result,
                 resultcount:action.count,
+                resultError: null
+            });
+        }
+
+        case GET_USERLOCATION: {
+            return assign({}, state, {
+                curloc: action.loc,
                 resultError: null
             });
         }
