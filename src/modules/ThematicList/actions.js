@@ -4,7 +4,7 @@ const SHOW_THEMATICLAYER='SHOW_THEMATICLAYER';
 const QUERY_THEMATICRESULT='QUERY_THEMATICRESULT';
 const SET_SELECTEDFEATURE='SET_SELECTEDFEATURE';
 import axios from 'axios';
-import { query } from 'esri-leaflet';
+import qs from 'qs';
 
 function loadThematicsList(result) {
     return {
@@ -39,9 +39,7 @@ function queryThematicResponces(response,geometry) {
 function queryThematic(serviceId,geometry,geometryType,where) {
     return (dispatch, getState) => {
         const query = getState().query;
-        return axios.post(ServerUrl+'/portal/map/query', {
-            "serviceId": serviceId,
-            "layerId": 0,
+        return axios.post('http://61.177.139.228:9000/gateway/wuxi_chenguan/grid_road_all/MapServer/'+serviceId+'/query',qs.stringify({
             "returnGeometry": true,
             "where": where||"1=1",
             "outSr": 4326,
@@ -50,8 +48,9 @@ function queryThematic(serviceId,geometry,geometryType,where) {
             "geometry": geometry||"",
             "geometryType": geometryType||"",
             "spatialRel": "esriSpatialRelIntersects",
-            "f": "json"
-        }).then((response) => {
+            "f": "pjson"
+
+        })).then((response) => {
             dispatch(queryThematicResponces(response.data,geometry))
         }).catch((e) => {
            // message.warning('数据查询失败,请稍后再试');

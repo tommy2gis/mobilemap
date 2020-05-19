@@ -254,14 +254,14 @@ class App extends React.Component {
     const selthemlist = themlist
       .filter((f) => selectedids.includes(f.id))
       .map((them) => {
-        if (them.serviceType === "map") {
+        if (them.servicetype === "map") {
           return {
             id: them.id,
-            title: them.alias,
-            url: "http://geowork.wicp.vip:25081" + them.proxy_url,
+            title: them.name,
+            url: them.url,
             type: "ersidylayer",
-            name: them.alias,
-            layers: [0],
+            name: them.name,
+            layers: [them.layers],
             visibility: true,
             opacity: 0.8,
             layerindex: "0",
@@ -725,13 +725,14 @@ class App extends React.Component {
           ? geometry
           : turfbuffer(geometry, 0.005, { units: "kilometers" });
       const arcgisgeo = geojsonToArcGIS(geometry);
-      const { selectedids } = this.props.thematics;
+      const { selectedids,themlist} = this.props.thematics;
+      const sellayer=themlist.filter(e=>e.id==selectedids[0])[0];
 
       if (selectedids.length > 0) {
         switch (drawMethod) {
           case "Polygon":
             this.props.queryThematic(
-              selectedids[0],
+              sellayer.layers,
               JSON.stringify(arcgisgeo),
               "esriGeometryPolygon"
             );
@@ -739,7 +740,7 @@ class App extends React.Component {
           case "Line":
           case "CircleMarker":
             this.props.queryThematic(
-              selectedids[0],
+              sellayer.layers,
               JSON.stringify(arcgisgeo.geometry),
               "esriGeometryPolygon"
             );
@@ -1000,7 +1001,7 @@ export default connect(
     endDrawing,
     mouseDownOnMap,
     changeModel,
-    n,
+    zoomToPoint,
     setBeginLoc,
     setEndLoc,
     loginout,
