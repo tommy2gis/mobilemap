@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:29:37 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-08 17:04:33
+ * @Last Modified time: 2020-05-22 14:46:57
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
@@ -36,7 +36,7 @@ export class Routing extends Component {
         currentinput: 'car-begin',
         beginaddress: '',
         endaddress: '',
-        showbegionsel: false,
+        showbegionsel: true,
         showendsel: false,
         showdetail:false,
         posimodel:null,
@@ -319,7 +319,7 @@ export class Routing extends Component {
     }
 
     render() {
-        const {style,busstyle,poiresult} = this.props.routing;
+        const {style,busstyle,poiresult,begionpoiresult,endpoiresult} = this.props.routing;
         const {showdetail,currentinput}=this.state;
         const dataSource = poiresult && poiresult.map((item, index) => {
             return <AutoComplete.Option key={item.id + index} value={item.x + ',' + item.y + ',' + item.name}>{item.name}</AutoComplete.Option>;
@@ -393,7 +393,7 @@ export class Routing extends Component {
                                 <Button onClick={() => { this.props.resetRouting(); this.clearAddress() }}  >清除</Button>
                             </Col>
                             <Col span={6} push={2}>
-                                <Button onClick={() => this.checkLocation()}  >开车去</Button>
+                                <Button onClick={() => this.checkLocation()}  >开始规划</Button>
                             </Col>
                         </Row>
 
@@ -441,20 +441,20 @@ export class Routing extends Component {
 
                             </Col>
                             <Col span={6} push={2}>
-                                <Button onClick={() => this.checkLocation()}  >坐公交</Button>
+                                <Button onClick={() => this.checkLocation()}  >开始规划</Button>
                             </Col>
 
                         </Row>
                     </Tabs.TabPane>
                 </Tabs>
-                <div className={(this.state.showbegionsel || this.state.showendsel) ? "routing_locationpanel" : "routing_locationpanel hidden"}>
+                <div className={(begionpoiresult||endpoiresult) ? "routing_locationpanel" : "routing_locationpanel hidden"}>
                     <Divider>请选择正确的起点或终点</Divider>
-                    <Collapse accordion bordered={false} defaultActiveKey={['1']}>
-                        {this.state.showbegionsel &&
+                    <Collapse accordion bordered={false} defaultActiveKey={['1','2']}>
+                        {begionpoiresult &&
                             <Collapse.Panel header={<div><Icon type="question-circle" />{" 起点: " + this.state.beginaddress}</div>} key="1">
                                 <List
                                     itemLayout="horizontal"
-                                    dataSource={this.props.routing.begionpoiresult}
+                                    dataSource={begionpoiresult}
                                     renderItem={(item, index) => (
                                         <List.Item onClick={()=>{this.setBegionLoc([item.lonlat.split(" ")[0],item.lonlat.split(" ")[1],item.name])}} actions={[<a><Icon type="environment" /></a>]}>
                                             <List.Item.Meta
@@ -466,11 +466,11 @@ export class Routing extends Component {
                                     )}
                                 />
                             </Collapse.Panel>}
-                        {this.state.showendsel &&
+                        {endpoiresult &&
                             <Collapse.Panel header={<div><Icon type="question-circle" />{" 终点: " + this.state.endaddress}</div>} key="2">
                                 <List
                                     itemLayout="horizontal"
-                                    dataSource={this.props.routing.endpoiresult}
+                                    dataSource={endpoiresult}
                                     renderItem={(item, index) => (
                                         <List.Item  onClick={()=>{this.setEndLoc([item.lonlat.split(" ")[0],item.lonlat.split(" ")[1],item.name])}} actions={[<a><Icon type="environment" /></a>]}>
                                             <List.Item.Meta

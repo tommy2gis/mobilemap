@@ -686,6 +686,16 @@ class App extends React.Component {
   };
   showRoutingPanel = () => {
     this.props.changeModel("routing");
+    const loc = this.props.query.curloc;
+    if(!loc){
+      this.props.setBeginLoc("map", {
+        lat: 32.385858,
+        lng: 120.570224137,
+        //lat: loc.latitude,
+        //lng: loc.longitude,
+      });
+    }
+    
   };
 
   drawSpatial = (type) => {
@@ -819,7 +829,7 @@ class App extends React.Component {
     if (mapConfig && mapConfig.map) {
       return (
         <div className="container">
-          {model === "main" || model === "layerswitch" ? (
+          {model === "main" ||model==='searchhidemodel'|| model === "layerswitch" ? (
             <SearchBar />
           ) : model === "routing" ? (
             [
@@ -917,10 +927,13 @@ class App extends React.Component {
               "clientmap " +
               (model === "layerswitch"
                 ? " bottommodel"
+                : (model === "searchhidemodel"&&result)
+                ? "searchhidemodel"
                 : result
                 ? "searchmodel"
                 : model === "routing"
                 ? "headmodel"
+                
                 : "")
             }
           >
@@ -950,7 +963,7 @@ class App extends React.Component {
           </div>
 
           {!result && nearbytitle && <HotSearch />}
-
+          {model == "main" && <div className="logo">时空大数据平台</div>}
           {userinfo && (
             <Drawer
               title={userinfo.displayname}

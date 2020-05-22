@@ -2,7 +2,7 @@
  * @Author: 史涛
  * @Date: 2019-01-05 19:29:34
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-07 15:01:05
+ * @Last Modified time: 2020-05-22 14:51:08
  */
 const {
   ROUTING_RESULT,
@@ -89,7 +89,7 @@ function routing(state = initialState, action) {
     case ADD_BEGINLOC: {
       return assign({}, state, {
         beginloc: action.latlng
-    
+        
       });
     }
 
@@ -97,13 +97,15 @@ function routing(state = initialState, action) {
       return assign({}, state, {
         beginaddress: action.address,
         begintype: action.settype,
+        begionpoiresult:null
       });
     }
 
     case ADD_ENDADDRESS: {
       return assign({}, state, {
         endaddress: action.address,
-        endtype: action.settype
+        endtype: action.settype,
+        endpoiresult:null
       });
     }
 
@@ -143,6 +145,7 @@ function routing(state = initialState, action) {
     case ADD_ENDLOC: {
       return assign({}, state, {
         endloc: action.latlng
+       
       });
     }
 

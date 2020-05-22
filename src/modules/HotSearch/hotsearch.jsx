@@ -2,12 +2,12 @@
  * @Author: 史涛
  * @Date: 2019-01-05 19:28:18
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-08 16:52:22
+ * @Last Modified time: 2020-05-22 11:43:35
  */
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Row, Col, Avatar, Divider, Icon, List } from "antd";
-import { query, onHotQuery, changeQueryKey } from "../../actions/query";
+import { query, onHotQuery, changeQueryKey,resetQuery } from "../../actions/query";
 import "./hotsearch.css";
 
 export class HotSearch extends Component {
@@ -31,6 +31,10 @@ export class HotSearch extends Component {
     store.remove("search_save_new");
     this.setState({ historykeys: [] });
   };
+
+  closePanel=()=>{
+    this.props.resetQuery()
+  }
 
   componentWillMount() {
   }
@@ -98,6 +102,7 @@ export class HotSearch extends Component {
           <Divider type="vertical" />
           <a onClick={() => this.handleSubmit("smallclass", "超市")}><i className="iconfont icon-chaoshi"></i>超市</a>
         </Row>
+        <a onClick={this.closePanel} style={{float:'right',color:'#1890ff',fontSize:16,marginTop:10}}>关闭</a>
       </div>
     );
   }
@@ -106,5 +111,5 @@ export default connect(
   state => {
     return { query: state.query };
   },
-  { query, onHotQuery, changeQueryKey }
+  { query, onHotQuery, changeQueryKey,resetQuery }
 )(HotSearch);
