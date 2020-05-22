@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:29:16 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-22 11:51:27
+ * @Last Modified time: 2020-05-22 16:29:55
  */
 import React, { Component } from 'react';
 import { List, Avatar, Icon } from 'antd';
@@ -31,7 +31,7 @@ export class ResultList extends Component {
     listTouchEnd=(e)=>{
         this.dom = document.getElementsByClassName("ant-spin-nested-loading")[0];
         this.list = document.getElementsByClassName("query_resultlist")[0];
-        if(this.dom.scrollTop==0&&this.touchmovey>100){
+        if(this.dom.scrollTop==0&&this.touchmovey>20){
             this.list.style.display="none";
             this.props.changeModel("searchhidemodel");
         }
