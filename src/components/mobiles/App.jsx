@@ -1000,7 +1000,7 @@ export default connect(
     endDrawing,
     mouseDownOnMap,
     changeModel,
-    n,
+    zoomToPoint,
     setBeginLoc,
     setEndLoc,
     loginout,
