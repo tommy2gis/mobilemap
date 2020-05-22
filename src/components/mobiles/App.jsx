@@ -124,7 +124,7 @@ class App extends React.Component {
         // alert(JSON.stringify(config));
         // alert(JSON.stringify(window.location.href.split('#')[0]))
         wx.config({
-          debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+          debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
           appId: config.appId, // 必填，公众号的唯一标识
           timestamp: config.timestamp, // 必填，生成签名的时间戳
           nonceStr: config.nonceStr, // 必填，生成签名的随机串
@@ -673,26 +673,31 @@ class App extends React.Component {
         break;
     }
   };
-  getLocation = (e) => {
-    wx.getLocation({
-      success: (res) => {
-        this.props.getUserLocation(res);
-        this.props.zoomToPoint({ x: res.longitude, y: res.latitude }, 17);
-      },
-      cancel: function(res) {
-        Toast.info("用户拒绝授权获取地理位置", 1);
-      },
-    });
+  getUserLocation = (e) => {
+    //this.props.zoomToPoint({ x: 120.570224137,y: 32.3858 }, 17);
+    try {
+      wx.getLocation({
+        success: (res) => {
+          this.props.getUserLocation(res);
+          this.props.zoomToPoint({ x: Number(res.longitude), y: Number(res.latitude) }, 17);
+        },
+        cancel: function(res) {
+          //Toast.info("用户拒绝授权获取地理位置", 1);
+        },
+      });
+    } catch (error) {
+      
+    }
   };
   showRoutingPanel = () => {
     this.props.changeModel("routing");
     const loc = this.props.query.curloc;
-    if(!loc){
+    if(loc){
       this.props.setBeginLoc("map", {
-        lat: 32.385858,
-        lng: 120.570224137,
-        //lat: loc.latitude,
-        //lng: loc.longitude,
+        // lat: 32.385858,
+        // lng: 120.570224137,
+        lat: loc.latitude,
+        lng: loc.longitude,
       });
     }
     
@@ -861,7 +866,7 @@ class App extends React.Component {
                 replace
               />
             </li>
-            <li className="circlebtn " onClick={this.getLocation}>
+            <li className="circlebtn " onClick={this.getUserLocation}>
               <i
                 className="iconfont icon-dingwei"
                 style={{ color: "#B059EF" }}
