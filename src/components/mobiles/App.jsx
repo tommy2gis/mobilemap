@@ -124,7 +124,7 @@ class App extends React.Component {
         // alert(JSON.stringify(config));
         // alert(JSON.stringify(window.location.href.split('#')[0]))
         wx.config({
-          debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+          debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
           appId: config.appId, // 必填，公众号的唯一标识
           timestamp: config.timestamp, // 必填，生成签名的时间戳
           nonceStr: config.nonceStr, // 必填，生成签名的随机串
@@ -769,10 +769,11 @@ class App extends React.Component {
   bufferQuery = () => {
     this.setState({ hotshow: true });
     const { tdtserverurl, tdttk } = this.props.mapConfig;
+    const {curloc}=this.props.query;
     return axios
       .get(tdtserverurl + "/geocoder", {
         params: {
-          postStr: { lon: 120.570224137, lat: 32.3858, ver: 1 },
+          postStr: { lon: curloc.longitude||120.570224137, lat: curloc.latitude||32.3858, ver: 1 },
           type: "query",
           tk: tdttk,
         },
@@ -780,7 +781,7 @@ class App extends React.Component {
       .then((response) => {
         let result = response.data.result;
         this.props.setNearBy(
-          "120.570224137,32.3858",
+          curloc.longitude?[curloc.longitude,curloc.latitude].join(","):"120.570224137,32.3858",
           null,
           result.formatted_address
         );
