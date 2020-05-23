@@ -1,1 +1,4 @@
 node_modules/
+build/bundle-mobile.js
+build/bundle-babel-polyfill.js
+build/bundle-mobile.js
