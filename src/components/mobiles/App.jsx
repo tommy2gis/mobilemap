@@ -39,7 +39,6 @@ import "./style.less";
 import "../../themes/iconfont/iconfont.css";
 import "antd/dist/antd.css";
 
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -147,11 +146,10 @@ class App extends React.Component {
           ], // 必填，需要使用的JS接口列表，所有JS接口列表见附录2});
         });
         wx.ready((res) => {
-         console.log("wx.ready");
+          console.log("wx.ready");
           wx.getLocation({
             success: (res) => {
               this.props.getUserLocation(res);
-             
             },
             cancel: function(res) {
               Toast.info("用户拒绝授权获取地理位置", 1);
@@ -175,15 +173,15 @@ class App extends React.Component {
         opacity: 0.8,
         fill: true,
         fillColor: "#fd8e2c",
-        fillOpacity: 1
+        fillOpacity: 1,
       };
       let fea = {
         type: "Feature",
         geometry: {
           type: "Point",
-          coordinates: [loc.longitude, loc.latitude]
+          coordinates: [loc.longitude, loc.latitude],
         },
-        properties: {}
+        properties: {},
       };
       return (
         <Feature
@@ -337,7 +335,6 @@ class App extends React.Component {
     }
     return null;
   };
-
 
   /**
    *渲染查询结果
@@ -679,20 +676,21 @@ class App extends React.Component {
       wx.getLocation({
         success: (res) => {
           this.props.getUserLocation(res);
-          this.props.zoomToPoint({ x: Number(res.longitude), y: Number(res.latitude) }, 17);
+          this.props.zoomToPoint(
+            { x: Number(res.longitude), y: Number(res.latitude) },
+            17
+          );
         },
         cancel: function(res) {
           //Toast.info("用户拒绝授权获取地理位置", 1);
         },
       });
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
   showRoutingPanel = () => {
     this.props.changeModel("routing");
     const loc = this.props.query.curloc;
-    if(loc){
+    if (loc) {
       this.props.setBeginLoc("map", {
         // lat: 32.385858,
         // lng: 120.570224137,
@@ -700,7 +698,6 @@ class App extends React.Component {
         lng: loc.longitude,
       });
     }
-    
   };
 
   drawSpatial = (type) => {
@@ -769,11 +766,15 @@ class App extends React.Component {
   bufferQuery = () => {
     this.setState({ hotshow: true });
     const { tdtserverurl, tdttk } = this.props.mapConfig;
-    const {curloc}=this.props.query;
+    const { curloc } = this.props.query;
     return axios
       .get(tdtserverurl + "/geocoder", {
         params: {
-          postStr: { lon: curloc.longitude||120.570224137, lat: curloc.latitude||32.3858, ver: 1 },
+          postStr: {
+            lon: curloc.longitude || 120.570224137,
+            lat: curloc.latitude || 32.3858,
+            ver: 1,
+          },
           type: "query",
           tk: tdttk,
         },
@@ -781,7 +782,9 @@ class App extends React.Component {
       .then((response) => {
         let result = response.data.result;
         this.props.setNearBy(
-          curloc.longitude?[curloc.longitude,curloc.latitude].join(","):"120.570224137,32.3858",
+          curloc.longitude
+            ? [curloc.longitude, curloc.latitude].join(",")
+            : "120.570224137,32.3858",
           null,
           result.formatted_address
         );
@@ -835,7 +838,9 @@ class App extends React.Component {
     if (mapConfig && mapConfig.map) {
       return (
         <div className="container">
-          {model === "main" ||model==='searchhidemodel'|| model === "layerswitch" ? (
+          {model === "main" ||
+          model === "searchhidemodel" ||
+          model === "layerswitch" ? (
             <SearchBar />
           ) : model === "routing" ? (
             [
@@ -855,72 +860,74 @@ class App extends React.Component {
 
           <ul className="right_toolbar">
             <li className="circlebtn " onClick={this.showLayerChangeControl}>
-              <i
-                className="iconfont icon-tuceng"
-                style={{ color: "#EFA659" }}
-              />
+              <div className="iconimage tuceng" />
+              <span>图层</span>
             </li>
             <li className="circlebtn ">
-              <NavLink
-                to="/thematics"
-                className="iconfont icon-zhuanti1"
-                replace
-              />
+              <NavLink to="/thematics" replace>
+                <div className="iconimage zhuanti" />
+                <span style={{ fontSize: 14, color: "#4e4e4e",width:34,position:"absolute"}}>专题</span>
+              </NavLink>
             </li>
             <li className="circlebtn " onClick={this.getUserLocation}>
-              <i
-                className="iconfont icon-dingwei"
-                style={{ color: "#B059EF" }}
-              />
+              <div className="iconimage dingwei" />
+              <span>定位</span>
             </li>
-            <li className="circlebtn ">
+            <li
+              className="circlebtn"
+              style={{ height: "100%", borderBottom: 0 }}
+            >
               {userinfo ? (
                 <i
                   className="iconfont icon-yonghu"
                   onClick={this.showUserinfoDrawer}
-                  style={{ color: "#B059EF" }}
                 />
               ) : (
                 <NavLink to="/login" className="iconfont icon-yonghu" replace />
               )}
             </li>
-            {selectedids.length ? (
-              <li className="circlebtn  " onClick={() => this.clearThemetics()}>
-                <i className="iconfont icon-shanchu" />
-              </li>
-            ) : null}
+          
           </ul>
 
           <ul className="left_toolbar">
             <li className="circlebtn " onClick={this.bufferQuery}>
-              <i
+              <div
                 className="iconfont icon-zhoubian"
-                style={{ color: "#1890FF" }}
+                style={{ fontSize: 26, height: 34 }}
               />
+              <span>周边</span>
             </li>
-            <li className="circlebtn  " onClick={this.showRoutingPanel}>
-              <i
-                className="iconfont icon-xianlu"
-                style={{ color: "#EFA659" }}
-              />
+            <li
+              className="circlebtn  "
+              onClick={this.showRoutingPanel}
+              style={selectedids.length?{}:{ borderBottom: 0 }}
+            >
+              <div className="iconimage xianlu" />
+              <span>出行</span>
             </li>
+            {selectedids.length ? (
+              <li className="circlebtn  " onClick={() => this.clearThemetics()}
+              style={{ height: "100%", borderBottom: 0 }}>
+                <i className="iconfont icon-shanchu" />
+              </li>
+            ) : null}
           </ul>
           {selectedids.length ? (
             <ul className="left_spatial_toolbar">
               <li
-                className="circlebtn  "
+                className="circlebtn spatialbtn "
                 onClick={() => this.drawSpatial("point")}
               >
                 <i className="iconfont icon-dian" />
               </li>
               <li
-                className="circlebtn  "
+                className="circlebtn spatialbtn "
                 onClick={() => this.drawSpatial("polyline")}
               >
                 <i className="iconfont icon-polyline" />
               </li>
               <li
-                className="circlebtn  "
+                className="circlebtn  spatialbtn"
                 onClick={() => this.drawSpatial("polygon")}
               >
                 <i className="iconfont icon-polygon" />
@@ -933,13 +940,12 @@ class App extends React.Component {
               "clientmap " +
               (model === "layerswitch"
                 ? " bottommodel"
-                : (model === "searchhidemodel"&&result)
+                : model === "searchhidemodel" && result
                 ? "searchhidemodel"
                 : result
                 ? "searchmodel"
                 : model === "routing"
                 ? "headmodel"
-                
                 : "")
             }
           >

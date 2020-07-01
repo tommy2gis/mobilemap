@@ -6,6 +6,21 @@
     padding: 10px;
 }
 
+.routing_panel .ant-tabs-bar{
+    margin-bottom: 10px;
+    border-bottom:0px;
+}
+
+.routing_panel .ant-tabs-nav .ant-tabs-tab{
+    padding: 6px 16px !important;
+}
+
+.routing_panel .setting_panel{
+    background-color: #eee;
+    border-radius: 8px;
+    padding: 6px 0;
+}
+
 .ant-tabs:not(.ant-tabs-vertical) > .ant-tabs-content > .ant-tabs-tabpane-inactive {
     width: 0;
 }
@@ -13,7 +28,6 @@
 .routing_panel  input{
     margin:0px 10px;
     border: 0px;
-    border-bottom: 1px solid #a9a8a8 !important;
     border-radius: 0px;
     padding-left: 30px;
     outline:none;

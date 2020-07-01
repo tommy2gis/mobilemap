@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:29:37 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-22 14:46:57
+ * @Last Modified time: 2020-07-01 11:24:27
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
@@ -352,7 +352,8 @@ export class Routing extends Component {
         return (
             <div className="routing_panel">
                 <Tabs defaultActiveKey="routing-car" animated={false} onChange={this.handleModuleChange}>
-                    <Tabs.TabPane tab="驾车" key="routing-car"><Row>
+                    <Tabs.TabPane tab="驾车" key="routing-car">
+                        <Row className="setting_panel">
                         <Col span={18} push={4} >
 
                             <AutoComplete
@@ -393,13 +394,13 @@ export class Routing extends Component {
                                 <Button onClick={() => { this.props.resetRouting(); this.clearAddress() }}  >清除</Button>
                             </Col>
                             <Col span={6} push={2}>
-                                <Button onClick={() => this.checkLocation()}  >开始规划</Button>
+                                <Button type="primary" onClick={() => this.checkLocation()}  >开始规划</Button>
                             </Col>
                         </Row>
 
 
                     </Tabs.TabPane>
-                    <Tabs.TabPane tab="公交" key="routing-bus"><Row>
+                    <Tabs.TabPane tab="公交" key="routing-bus"><Row className="setting_panel">
                         <Col span={18} push={4} >
                             <AutoComplete
                                 placeholder="输入起点或地图选点"
@@ -441,7 +442,7 @@ export class Routing extends Component {
 
                             </Col>
                             <Col span={6} push={2}>
-                                <Button onClick={() => this.checkLocation()}  >开始规划</Button>
+                                <Button type="primary" onClick={() => this.checkLocation()}  >开始规划</Button>
                             </Col>
 
                         </Row>
