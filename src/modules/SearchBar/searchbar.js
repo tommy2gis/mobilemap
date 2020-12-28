@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:29:54 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-22 14:02:30
+ * @Last Modified time: 2020-12-07 13:16:28
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -108,7 +108,6 @@ class SearchBar extends Component {
                             value={this.props.query.key}
                             dataSource={simpleresult.map(renderOption)}
                         >
-                            {/* {children} */}
                         </AutoComplete>
 
 
