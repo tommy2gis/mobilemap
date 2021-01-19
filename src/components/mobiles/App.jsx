@@ -57,7 +57,7 @@ class App extends React.Component {
     this.weixin();
   }
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (
       newProps.query.result &&
       newProps.query.result !== this.props.query.result
@@ -256,7 +256,7 @@ class App extends React.Component {
           return {
             id: them.id,
             title: them.alias,
-            url: "http://geowork.wicp.vip:25081" + them.proxy_url,
+            url: "https://www.geospark.cn" + them.proxy_url,
             type: "ersidylayer",
             name: them.alias,
             layers: [0],
@@ -265,6 +265,21 @@ class App extends React.Component {
             layerindex: "0",
             f: "image",
           };
+        }else if(them.serviceType === "wmts"){
+          return {
+            type:'geowmts',
+            id: them.id,
+            title: them.alias,
+            url: "https://www.geospark.cn" + them.proxy_url,
+          }
+        }else if(them.serviceType === "wms"){
+          return {
+            type:'ersiwmslayer',
+            id: them.id,
+            title: them.alias,
+            layername:"0",
+            url: "https://www.geospark.cn" + them.proxy_url,
+          }
         }
       });
     if (layers) {
@@ -610,8 +625,7 @@ class App extends React.Component {
       },
       properties: { styleName: option.styleName || "marker" },
     };
-    return (
-      <Feature
+    return  <Feature
         key={option.key}
         type={fea.type}
         crs={this.props.map.projection}
@@ -627,7 +641,7 @@ class App extends React.Component {
         zIndexOffset={option.zIndexOffset || 0}
         properties={fea.properties}
       />
-    );
+    ;
   };
 
   renderHeadLeft = (model) => {
@@ -830,10 +844,14 @@ class App extends React.Component {
 
   render() {
     const { mapConfig, map, draw, query } = this.props;
-    const { selectedids, themresult } = this.props.thematics;
+    const { selectedids, themresult,themlist } = this.props.thematics;
     const { result, nearbytitle, userinfo } = this.props.query;
     const model = (map && map.model) || "main";
     const taskcount = (query.tasksresult && query.tasksresult.count) || 0;
+
+    const selsquerylayers=themlist.filter((f) => selectedids.includes(f.id)&&f.serviceType === "map");
+
+
     // console.log(this.props.route, this.props.params, this.props.routeParams);
     if (mapConfig && mapConfig.map) {
       return (
@@ -912,7 +930,7 @@ class App extends React.Component {
               </li>
             ) : null}
           </ul>
-          {selectedids.length ? (
+          {selsquerylayers.length ? (
             <ul className="left_spatial_toolbar">
               <li
                 className="circlebtn spatialbtn "

@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:33:51 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-05-07 10:13:52
+ * @Last Modified time: 2021-01-19 16:37:45
  */
 const PropTypes = require("prop-types");
 
@@ -183,7 +183,7 @@ class Feature extends React.Component {
     }
   }
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (
       !isEqual(newProps.properties, this.props.properties) ||
       !isEqual(newProps.geometry, this.props.geometry) ||
@@ -488,4 +488,5 @@ class Feature extends React.Component {
   };
 }
 
-module.exports = Feature;
+export default Feature;
+

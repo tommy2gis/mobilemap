@@ -32,7 +32,7 @@ class loginComponent extends Component {
     });
 }
 
-componentWillReceiveProps(nextProps) {
+UNSAFE_componentWillReceiveProps(nextProps) {
   if (
     nextProps.query&&nextProps.query.userinfo !== this.props.query.userinfo
   ) {

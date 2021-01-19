@@ -1,8 +1,8 @@
 /*
  * @Author: 史涛 
  * @Date: 2019-01-05 19:33:37 
- * @Last Modified by:   史涛 
- * @Last Modified time: 2019-01-05 19:33:37 
+ * @Last Modified by: 史涛
+ * @Last Modified time: 2021-01-18 17:05:37
  */
 
 
@@ -30,3 +30,15 @@ const createFeatureLayer = options => {
     return featureLayer(options);
 };
 Layers.registerType('ersifealayer', { create: createFeatureLayer});
+
+
+const createWmsLayer = options =>{
+    return L.tileLayer.wms(options.url, {
+        layers: options.layername,
+        styles: 'default',
+        format: 'image/png',
+        transparent: true
+    });
+}
+
+Layers.registerType('ersiwmslayer',{create:createWmsLayer});

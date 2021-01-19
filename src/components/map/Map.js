@@ -70,7 +70,7 @@ class LeafletMap extends React.Component {
 
     state = {};
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         this.zoomOffset = 0;
 
         if (this.props.projection == "EPSG:4326") {
@@ -195,7 +195,7 @@ class LeafletMap extends React.Component {
 
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
 
         if (newProps.mousePointer !== this.props.mousePointer) {
             this.setMousePointer(newProps.mousePointer);

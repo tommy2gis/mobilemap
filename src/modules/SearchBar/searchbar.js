@@ -2,7 +2,7 @@
  * @Author: 史涛 
  * @Date: 2019-01-05 19:29:54 
  * @Last Modified by: 史涛
- * @Last Modified time: 2020-12-07 13:16:28
+ * @Last Modified time: 2021-01-19 16:21:38
  */
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -106,7 +106,7 @@ class SearchBar extends Component {
                             onChange={this.handleChange}
                             onSelect={this.handleSelect}
                             value={this.props.query.key}
-                            dataSource={simpleresult.map(renderOption)}
+                            dataSource={simpleresult?simpleresult.map(renderOption):[]}
                         >
                         </AutoComplete>
 

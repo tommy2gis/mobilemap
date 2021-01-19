@@ -36,7 +36,7 @@ export class HotSearch extends Component {
     this.props.resetQuery()
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
   }
 
   render() {

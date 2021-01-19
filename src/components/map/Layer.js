@@ -35,7 +35,7 @@ class LeafletLayer extends React.Component {
         }
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         const newVisibility = newProps.options && newProps.options.visibility !== false;
         this.setLayerVisibility(newVisibility);
 

@@ -103,7 +103,7 @@ const toLeafletCircle = (radius, center, projection = "EPSG:4326") => {
  * @memberof components.map
  * @prop {object} map the map usedto drawing on
  * @prop {string} drawOwner the owner of the drawn features
- * @prop {string} drawStatus the status that allows to do different things. see componentWillReceiveProps method
+ * @prop {string} drawStatus the status that allows to do different things. see UNSAFE_componentWillReceiveProps method
  * @prop {string} drawMethod the method used to draw different geometries. can be Circle,BBOX, or a geomType from Point to MultiPolygons
  * @prop {object} options it contains the params used to enable the interactions or simply stop the DrawSupport after a ft is drawn
  * @prop {object[]} features an array of geojson features used as a starting point for drawing new shapes or edit them
@@ -168,9 +168,9 @@ class DrawSupport extends React.Component {
      * clean it cleans the drawn features and stop the drawsupport
      * endDrawing as for 'replace' action allows to replace all the features in addition triggers end drawing action to store data in state
      * @memberof components.map.DrawSupport
-     * @function componentWillReceiveProps
+     * @function UNSAFE_componentWillReceiveProps
     */
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         let drawingStrings = this.props.messages || this.context.messages ? this.context.messages.drawLocal : false;
         if (drawingStrings) {
             L.drawLocal = drawingStrings;
